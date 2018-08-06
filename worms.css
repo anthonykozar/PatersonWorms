@@ -1,0 +1,9 @@
+svg {
+  border: 1px solid red;
+  width: 5000px;
+  height: 5000px;
+}
+
+html, body {
+  height: 100%;
+}
