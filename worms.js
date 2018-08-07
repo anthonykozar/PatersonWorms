@@ -14,7 +14,13 @@ var field3_2 = 1;
 var field3_3 = 0;
 var field3_4 = 2;
 var field4 = 0;
-
+// var field1 = 1;
+// var field2 = 2;
+// var field3_1 = 2;
+// var field3_2 = 0;
+// var field3_3 = 0;
+// var field3_4 = 0;
+// var field4 = 0;
 
 function addVertex(x, y) {
   //edges[x,y] = [] all zero except approaching dir (currentDir)
@@ -67,10 +73,12 @@ function moveTo(c_x, c_y, x, y, to_dir) {
   var max_x = parseInt(vb[0]) + parseInt(vb[2]);
   var max_y = parseInt(vb[1]) + parseInt(vb[3]);
 
-  if(bbox.x2 > max_x || bbox.y2 > max_y)
+  if(max_x - bbox.x2 < 0.10*max_x || max_y - bbox.y2 < 0.10*max_y || -max_x - bbox.x > -0.10*max_x || -max_y - bbox.y > -0.10*max_y)
     {
-      console.log(bbox);
-      console.log(vb);
+      if(DEBUG) {
+        console.log(bbox);
+        console.log(vb);
+      }
       zoom *= 1.5;
       snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
     }
@@ -90,7 +98,7 @@ function determineMove(c_x, c_y, c_dir) {
   var new_dir = (c_dir + 3) % 6;
   var eaten = 0;
   for(var i = 0; i < c_edges.length; i++){eaten += c_edges[i]}
-  
+
   var choice = 1;
   //Determine the correct field of choice
   if(eaten == 1)
@@ -161,7 +169,7 @@ moveTo(current_x, current_y, -1, 0, 0);
 current_x = -1;
 var s = 0;
 var timer = setTimeout(function(){
-  nextStep(s, current_x, current_y, current_dir);}, 1000);
+  nextStep(s, current_x, current_y, current_dir);}, 0.25);
 function nextStep(step, cx, cy, cd){  
     var updated_pos = determineMove(cx, cy, cd);
     if(updated_pos == false) {
@@ -172,8 +180,8 @@ function nextStep(step, cx, cy, cd){
     cy = updated_pos[1];
     cd = updated_pos[2];
     step += 1;
-    if(step < 500)
+    if(step < 4000)
       setTimeout(function(){
-  nextStep(step, cx, cy, cd);}, 1000);
+  nextStep(step, cx, cy, cd);}, 0.25);
 }
 console.log("DONE");
