@@ -79,7 +79,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
         console.log(bbox);
         console.log(vb);
       }
-      steps_zoom = 100;
+      var steps_zoom = 100;
       setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.5, step, x, y, to_dir)}, 0.25);
       zoom *= 1.5;
       return true;
@@ -171,6 +171,16 @@ function determineMove(c_x, c_y, c_dir, step) {
   return false;
 }
 
+
+/* nextStep
+** cx - Current x value on the lattice
+** cy - Current y value on the lattice
+** cd - Current direction the worm is facing
+**
+** updated_pos will be of the form [new_x, new_y, new_direction]
+** If updated_pos is false, then the worm has died or a zoom out is needed.
+** If there are still more steps that need to be taken, then the next step should be queued up.
+*/
 function nextStep(step, cx, cy, cd){  
     var updated_pos = determineMove(cx, cy, cd, step);
     if(updated_pos == false) {
@@ -186,5 +196,7 @@ function nextStep(step, cx, cy, cd){
 */
 addVertex(0,0);
 moveTo(0, 0, -1, 0, 0);
+
+// Start "moving" the worm
 setTimeout(function(){
   nextStep(0, -1, 0, 0);}, 0.25);
