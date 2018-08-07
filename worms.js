@@ -140,24 +140,12 @@ function determineMove(c_x, c_y, c_dir, step) {
     count += 1;
     choice -= !c_edges[(new_dir+count) % 6];
   }
+  var dir_mat = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
-    if(new_dir == 4)
-      y += 1;
-    else if(new_dir == 5) {
-      x -= 1;
-      y += 1;
-    }
-    else if(new_dir == 0)
-      x -= 1;
-    else if(new_dir == 1)
-      y -= 1;
-    else if (new_dir == 2) {
-      x += 1;
-      y -= 1;
-    }
-    else if (new_dir == 3)
-      x += 1;
+    x += dir_mat[new_dir][0];
+    y += dir_mat[new_dir][1];
+    
     var zooming = moveTo(c_x, c_y, x, y, new_dir, step);
     if(zooming)
       return false;
