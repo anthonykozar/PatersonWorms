@@ -15,8 +15,20 @@ var field3_3 = 0;
 var field3_4 = 2;
 var field4 = 0;
 
+/* addVertex
+** x - An x value on the lattice
+** y - A y value on the lattice
+**
+** edges[x] gives the line associated with the x coordinate x on the lattice.
+** edges[x][y] gives the vertex (x,y) on the lattice.
+** In order to utilize associated arrays, edges is made as a new Object().
+** Similarly, each line edges[x] must be initialized as a new Object() if it is not already one.
+** The use of a boolean array of length six is that each boolean represents the status of one of the paths
+** coming from the vertex. Initially, all paths to the new vertex are uneaten. Booleans take up less
+** memory than integers and javascript will allow addition of booleans to integers.
+** If the vertex has already been initialized, this function effectively does nothing.
+*/
 function addVertex(x, y) {
-  //edges[x,y] = [] all zero except approaching dir (currentDir)
   if(edges[x] == undefined) {
     edges[x] = new Object();
   }
@@ -31,12 +43,9 @@ function addVertex(x, y) {
       console.log("addVertex(" + x + ", " + y + ") NOT ADDED");
     }
   }
-};
+}
 
 function moveTo(c_x, c_y, x, y, to_dir, step) {
-  //add in a new vertex
-  //update new edge to be taken
-  //update old edge to be taken
   if(DEBUG) {
     console.log("moveTo(" + c_x + ", " + c_y + ", " + x + ", " +  y + ", " + to_dir + ")");
   };
@@ -78,7 +87,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
       return true;
     }
   return false;
-};
+}
 
 function zoomOut(c_zoom, c_step, steps_zoom, max_zoom, step, cx, cy, cd) {
   if(DEBUG) {
