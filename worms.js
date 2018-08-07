@@ -1,12 +1,12 @@
 var edges = new Object();
 var DEBUG = false;
-var snap = Snap();
-var snap_center_x = Math.round(window.innerWidth/2);
-var snap_center_y = Math.round(window.innerHeight/2);
+var snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
+var snap_center_x = 0
+var snap_center_y = 0;
 var line_length = 10;
 
 var group = snap.g();
-
+var zoom = 1.0;
 var field1 = 1;
 var field2 = 2;
 var field3_1 = 2;
@@ -62,15 +62,17 @@ function moveTo(c_x, c_y, x, y, to_dir) {
 
   group.add(line);
   //check if the line is close enough to the boundary to necessitate a shrink
-  //if x1 or x2 is greater than .95*svg width or less than 0.05*svg width
-  //or if y1 or y2 is greater than .95*svg height or less than 0.05*svg height
-  
-  if(x1 > 0.95*window.innerWidth || x2 > 0.95*window.innerWidth
-    || x1 < 0.05*window.innerWidth || x2 < 0.05*window.innerWidth
-    || y1 > 0.95*window.innerHeight || y2 > 0.95*window.innerHeight
-    || y1 < 0.05*window.innerHeight || y2 < 0.05*window.innerHeight)
+  var bbox = group.getBBox();
+  var vb = snap.attr("viewBox").vb.split(" ");
+  var max_x = parseInt(vb[0]) + parseInt(vb[2]);
+  var max_y = parseInt(vb[1]) + parseInt(vb[3]);
+
+  if(bbox.x2 > max_x || bbox.y2 > max_y)
     {
-      group.animate({transform: 's0.80,0.80'}, 3000, mina.easein());
+      console.log(bbox);
+      console.log(vb);
+      zoom *= 1.5;
+      snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
     }
 };
 
@@ -158,7 +160,7 @@ addVertex(0,0);
 moveTo(current_x, current_y, -1, 0, 0);
 current_x = -1;
 var s = 0;
-while(s < 3000) {
+while(s < 500) {
   var updated_pos = determineMove(current_x, current_y, current_dir);
   if(updated_pos == false) {
     break;
