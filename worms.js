@@ -171,32 +171,20 @@ function determineMove(c_x, c_y, c_dir, step) {
   return false;
 }
 
-
-
-var current_x = 0;
-var current_y = 0;
-var current_dir = 0;
-
-addVertex(0,0);
-
-moveTo(current_x, current_y, -1, 0, 0);
-current_x = -1;
-var s = 0;
-var timer = setTimeout(function(){
-  nextStep(s, current_x, current_y, current_dir);}, 0.25);
 function nextStep(step, cx, cy, cd){  
     var updated_pos = determineMove(cx, cy, cd, step);
-    var zooming = false;
     if(updated_pos == false) {
-      clearTimeout(timer);
       return false;
     };
-    cx = updated_pos[0];
-    cy = updated_pos[1];
-    cd = updated_pos[2];
-    zooming = updated_pos[3];
-    step += 1;
-    if(step < 4000 && !zooming)
-      setTimeout(function(){nextStep(step, cx, cy, cd);}, 0.25);
+    if(step < 4000 && !updated_pos[3])
+      setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
 }
-console.log("DONE");
+/* INITIAL STEPS
+** Initially, the worm should move directly to the left.
+** This is how it is done by Gardner. Fixing this initial movement halts simple rotations.
+** Though this is just a convention and could be changed, I have left it in for consistency.
+*/
+addVertex(0,0);
+moveTo(0, 0, -1, 0, 0);
+setTimeout(function(){
+  nextStep(0, -1, 0, 0);}, 0.25);
