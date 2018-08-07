@@ -1,8 +1,8 @@
 var edges = new Object();
 var DEBUG = false;
 var snap = Snap();
-var snap_center_x = 2500;
-var snap_center_y = 2500;
+var snap_center_x = Math.round(window.innerWidth/2);
+var snap_center_y = Math.round(window.innerHeight/2);
 var line_length = 10;
 
 var field1 = 1;
