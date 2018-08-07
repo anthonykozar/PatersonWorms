@@ -160,7 +160,8 @@ addVertex(0,0);
 moveTo(current_x, current_y, -1, 0, 0);
 current_x = -1;
 var s = 0;
-var timer = setTimeout(nextStep(s, current_x, current_y, current_dir), 3000);
+var timer = setTimeout(function(){
+  nextStep(s, current_x, current_y, current_dir);}, 1000);
 function nextStep(step, cx, cy, cd){  
     var updated_pos = determineMove(cx, cy, cd);
     if(updated_pos == false) {
@@ -172,6 +173,7 @@ function nextStep(step, cx, cy, cd){
     cd = updated_pos[2];
     step += 1;
     if(step < 500)
-      setTimeout(nextStep(step, cx, cy, cd), 3000);
+      setTimeout(function(){
+  nextStep(step, cx, cy, cd);}, 1000);
 }
 console.log("DONE");
