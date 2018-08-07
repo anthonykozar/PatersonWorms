@@ -14,13 +14,6 @@ var field3_2 = 1;
 var field3_3 = 0;
 var field3_4 = 2;
 var field4 = 0;
-// var field1 = 1;
-// var field2 = 2;
-// var field3_1 = 2;
-// var field3_2 = 0;
-// var field3_3 = 0;
-// var field3_4 = 0;
-// var field4 = 0;
 
 function addVertex(x, y) {
   //edges[x,y] = [] all zero except approaching dir (currentDir)
@@ -166,7 +159,9 @@ function determineMove(c_x, c_y, c_dir, step) {
     else if (new_dir == 3)
       x += 1;
     var zooming = moveTo(c_x, c_y, x, y, new_dir, step);
-    return [x, y, new_dir, zooming];
+    if(zooming)
+      return false;
+    return [x, y, new_dir];
   }
   return false;
 }
@@ -186,7 +181,7 @@ function nextStep(step, cx, cy, cd){
     if(updated_pos == false) {
       return false;
     };
-    if(step < 4000 && !updated_pos[3])
+    if(step < 4000)
       setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
 }
 /* INITIAL STEPS
