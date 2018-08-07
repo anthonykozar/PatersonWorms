@@ -40,7 +40,7 @@ function addVertex(x, y) {
   }
 };
 
-function moveTo(c_x, c_y, x, y, to_dir) {
+function moveTo(c_x, c_y, x, y, to_dir, step) {
   //add in a new vertex
   //update new edge to be taken
   //update old edge to be taken
@@ -80,20 +80,25 @@ function moveTo(c_x, c_y, x, y, to_dir) {
         console.log(vb);
       }
       steps_zoom = 100;
-      setTimeout(function(){zoom_out(zoom, 1, steps_zoom, zoom*1.5)}, 0.25);
+      setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.5, step, x, y, to_dir)}, 0.25);
       zoom *= 1.5;
       return true;
     }
   return false;
 };
 
-function zoom_out(c_zoom, c_step, steps_zoom, max_zoom) {
+function zoomOut(c_zoom, c_step, steps_zoom, max_zoom, step, cx, cy, cd) {
+  if(DEBUG) {
+    console.log("zoomOut(" + c_zoom + ", " + c_step + ", " + steps_zoom + ", " +  max_zoom + ", " + step + ", " + cx + ", " +  cx + ", " + cy + ", " + cd + ")");
+  }
   snap.attr({viewBox: Math.round(-window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + Math.round(-window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom)) + " " + window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))});
   if(c_step < steps_zoom)
-    setTimeout(function(){zoom_out(c_zoom, c_step+1, steps_zoom, zoom*1.5)}, 0.25);
+    setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, 0.25);
+  else
+    setTimeout(function(){nextStep(step, cx, cy, cd);}, 0.25);
 }
 
-function determineMove(c_x, c_y, c_dir) {
+function determineMove(c_x, c_y, c_dir, step) {
   if(DEBUG) {
     console.log("determineMove(" + c_x + "," + c_y + "," + c_dir + ")");
   }
@@ -160,7 +165,7 @@ function determineMove(c_x, c_y, c_dir) {
     }
     else if (new_dir == 3)
       x += 1;
-    var zooming = moveTo(c_x, c_y, x, y, new_dir);
+    var zooming = moveTo(c_x, c_y, x, y, new_dir, step);
     return [x, y, new_dir, zooming];
   }
   return false;
@@ -180,7 +185,7 @@ var s = 0;
 var timer = setTimeout(function(){
   nextStep(s, current_x, current_y, current_dir);}, 0.25);
 function nextStep(step, cx, cy, cd){  
-    var updated_pos = determineMove(cx, cy, cd);
+    var updated_pos = determineMove(cx, cy, cd, step);
     var zooming = false;
     if(updated_pos == false) {
       clearTimeout(timer);
@@ -191,8 +196,7 @@ function nextStep(step, cx, cy, cd){
     cd = updated_pos[2];
     zooming = updated_pos[3];
     step += 1;
-    if(step < 4000)
-      setTimeout(function(){
-  nextStep(step, cx, cy, cd);}, 0.25+1000.0*zooming);
+    if(step < 4000 && !zooming)
+      setTimeout(function(){nextStep(step, cx, cy, cd);}, 0.25);
 }
 console.log("DONE");
