@@ -193,6 +193,6 @@ function nextStep(step, cx, cy, cd){
     step += 1;
     if(step < 4000)
       setTimeout(function(){
-  nextStep(step, cx, cy, cd);}, 0.25+500.0*zooming);
+  nextStep(step, cx, cy, cd);}, 0.25+1000.0*zooming);
 }
 console.log("DONE");
