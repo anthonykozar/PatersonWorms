@@ -5,6 +5,8 @@ var snap_center_x = Math.round(window.innerWidth/2);
 var snap_center_y = Math.round(window.innerHeight/2);
 var line_length = 10;
 
+var group = snap.g();
+
 var field1 = 1;
 var field2 = 2;
 var field3_1 = 2;
@@ -44,14 +46,32 @@ function moveTo(c_x, c_y, x, y, to_dir) {
   edges[x][y][((to_dir + 3) % 6)] = true;
   edges[c_x][c_y][to_dir] = true;
   
-  var line = snap.line(snap_center_x, snap_center_y, snap_center_x - Math.round(line_length*Math.cos(-to_dir*Math.PI/3)), snap_center_y - Math.round(line_length*Math.sin(-to_dir*Math.PI/3)));
-  snap_center_x = snap_center_x - Math.round(line_length*Math.cos(-to_dir*Math.PI/3));
-  snap_center_y = snap_center_y - Math.round(line_length*Math.sin(-to_dir*Math.PI/3));
+  
+  var x1 = snap_center_x;
+  var x2 = snap_center_x - Math.round(line_length*Math.cos(-to_dir*Math.PI/3));
+  var y1 = snap_center_y;
+  var y2 = snap_center_y - Math.round(line_length*Math.sin(-to_dir*Math.PI/3));
+  var line = snap.line(x1, y1, x2, y2);
+  snap_center_x = x2;
+  snap_center_y = y2;
   line.attr({
     strokeWidth: 5,
     stroke: "#f00",
     strokeLinecap: "round"
   });
+
+  group.add(line);
+  //check if the line is close enough to the boundary to necessitate a shrink
+  //if x1 or x2 is greater than .95*svg width or less than 0.05*svg width
+  //or if y1 or y2 is greater than .95*svg height or less than 0.05*svg height
+  
+  if(x1 > 0.95*window.innerWidth || x2 > 0.95*window.innerWidth
+    || x1 < 0.05*window.innerWidth || x2 < 0.05*window.innerWidth
+    || y1 > 0.95*window.innerHeight || y2 > 0.95*window.innerHeight
+    || y1 < 0.05*window.innerHeight || y2 < 0.05*window.innerHeight)
+    {
+      group.animate({transform: 's0.80,0.80'}, 3000, mina.easein());
+    }
 };
 
 function determineMove(c_x, c_y, c_dir) {
@@ -138,7 +158,7 @@ addVertex(0,0);
 moveTo(current_x, current_y, -1, 0, 0);
 current_x = -1;
 var s = 0;
-while(s < 150) {
+while(s < 3000) {
   var updated_pos = determineMove(current_x, current_y, current_dir);
   if(updated_pos == false) {
     break;
