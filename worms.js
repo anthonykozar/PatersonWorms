@@ -79,10 +79,19 @@ function moveTo(c_x, c_y, x, y, to_dir) {
         console.log(bbox);
         console.log(vb);
       }
+      steps_zoom = 100;
+      setTimeout(function(){zoom_out(zoom, 1, steps_zoom, zoom*1.5)}, 0.25);
       zoom *= 1.5;
-      snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
+      return true;
     }
+  return false;
 };
+
+function zoom_out(c_zoom, c_step, steps_zoom, max_zoom) {
+  snap.attr({viewBox: Math.round(-window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + Math.round(-window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom)) + " " + window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))});
+  if(c_step < steps_zoom)
+    setTimeout(function(){zoom_out(c_zoom, c_step+1, steps_zoom, zoom*1.5)}, 0.25);
+}
 
 function determineMove(c_x, c_y, c_dir) {
   if(DEBUG) {
@@ -151,8 +160,8 @@ function determineMove(c_x, c_y, c_dir) {
     }
     else if (new_dir == 3)
       x += 1;
-    moveTo(c_x, c_y, x, y, new_dir);
-    return [x, y, new_dir];
+    var zooming = moveTo(c_x, c_y, x, y, new_dir);
+    return [x, y, new_dir, zooming];
   }
   return false;
 }
@@ -172,6 +181,7 @@ var timer = setTimeout(function(){
   nextStep(s, current_x, current_y, current_dir);}, 0.25);
 function nextStep(step, cx, cy, cd){  
     var updated_pos = determineMove(cx, cy, cd);
+    var zooming = false;
     if(updated_pos == false) {
       clearTimeout(timer);
       return false;
@@ -179,9 +189,10 @@ function nextStep(step, cx, cy, cd){
     cx = updated_pos[0];
     cy = updated_pos[1];
     cd = updated_pos[2];
+    zooming = updated_pos[3];
     step += 1;
     if(step < 4000)
       setTimeout(function(){
-  nextStep(step, cx, cy, cd);}, 0.25);
+  nextStep(step, cx, cy, cd);}, 0.25+500.0*zooming);
 }
 console.log("DONE");
