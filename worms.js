@@ -1,5 +1,6 @@
 var edges = new Object();
 var DEBUG = false;
+var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
 var snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
 var snap_center_x = 0
 var snap_center_y = 0;
@@ -47,7 +48,7 @@ function addVertex(x, y) {
 
 function moveTo(c_x, c_y, x, y, to_dir, step) {
   if(DEBUG) {
-    console.log("moveTo(" + c_x + ", " + c_y + ", " + x + ", " +  y + ", " + to_dir + ")");
+    console.log("moveTo(" + c_x + ", " + c_y + ", " + x + ", " +  y + ", " + to_dir + ", " + step + ")");
   };
   
   addVertex(x,y);
@@ -149,11 +150,10 @@ function determineMove(c_x, c_y, c_dir, step) {
     count += 1;
     choice -= !c_edges[(new_dir+count) % 6];
   }
-  var dir_mat = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
-    x += dir_mat[new_dir][0];
-    y += dir_mat[new_dir][1];
+    x += DIR_MATRIX[new_dir][0];
+    y += DIR_MATRIX[new_dir][1];
     
     var zooming = moveTo(c_x, c_y, x, y, new_dir, step);
     if(zooming)
