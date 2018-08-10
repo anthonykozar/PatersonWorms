@@ -1,36 +1,5 @@
-var table = document.createElement("TABLE");
-var body = document.getElementsByTagName("body")[0];
-body.appendChild(table);
 
-var header_row = document.createElement("TR");
-for(var i = 0; i < 5; i++) {
-  var header = document.createElement("TH");
-  if(i > 0)
-    header.innerHTML = ['a', 'b', 'c', 'd'][i-1];
-  header_row.appendChild(header);
-}
-table.appendChild(header_row);
-
-var choice_field = [2, 4, 3, 3, 3, 3, 2];
-var name_field = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
-for(var j = 0; j < choice_field.length; j++) {
-  var tr = document.createElement("TR");
-  table.appendChild(tr);
-  for(var i = 0; i < choice_field[j] + 1; i++) {
-    var td = document.createElement("TD");
-    if(i > 0) {
-      var x = document.createElement("INPUT");
-      x.setAttribute("type", "radio");
-      x.setAttribute("name", "field_" + name_field[j]);
-      x.setAttribute("value", i-1);
-      td.appendChild(x);
-    }
-    else {
-      td.innerHTML = "field_" + name_field[j];
-    }
-    tr.appendChild(td);
-  }
-}
+createTable();
 
 var edges = new Object();
 var DEBUG = false;
@@ -215,6 +184,42 @@ function nextStep(step, cx, cy, cd){
     };
     if(step < 4000)
       setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
+}
+
+function createTable() {
+  var table = document.createElement("TABLE");
+  var body = document.getElementsByTagName("body")[0];
+  body.appendChild(table);
+
+  var header_row = document.createElement("TR");
+  for(var i = 0; i < 5; i++) {
+    var header = document.createElement("TH");
+    if(i > 0)
+      header.innerHTML = ['a', 'b', 'c', 'd'][i-1];
+    header_row.appendChild(header);
+  }
+  table.appendChild(header_row);
+
+  var choice_field = [2, 4, 3, 3, 3, 3, 2];
+  var name_field = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
+  for(var j = 0; j < choice_field.length; j++) {
+    var tr = document.createElement("TR");
+    table.appendChild(tr);
+    for(var i = 0; i < choice_field[j] + 1; i++) {
+      var td = document.createElement("TD");
+      if(i > 0) {
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "radio");
+        x.setAttribute("name", "field_" + name_field[j]);
+        x.setAttribute("value", i-1);
+        td.appendChild(x);
+      }
+      else {
+        td.innerHTML = "field_" + name_field[j];
+      }
+      tr.appendChild(td);
+    }
+  }
 }
 /* INITIAL STEPS
 ** Initially, the worm should move directly to the left.
