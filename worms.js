@@ -1,8 +1,42 @@
+var table = document.createElement("TABLE");
+var body = document.getElementsByTagName("body")[0];
+body.appendChild(table);
+
+var header_row = document.createElement("TR");
+for(var i = 0; i < 5; i++) {
+  var header = document.createElement("TH");
+  if(i > 0)
+    header.innerHTML = ['a', 'b', 'c', 'd'][i-1];
+  header_row.appendChild(header);
+}
+table.appendChild(header_row);
+
+var choice_field = [2, 4, 3, 3, 3, 3, 2];
+var name_field = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
+for(var j = 0; j < choice_field.length; j++) {
+  var tr = document.createElement("TR");
+  table.appendChild(tr);
+  for(var i = 0; i < choice_field[j] + 1; i++) {
+    var td = document.createElement("TD");
+    if(i > 0) {
+      var x = document.createElement("INPUT");
+      x.setAttribute("type", "radio");
+      x.setAttribute("name", "field_" + name_field[j]);
+      x.setAttribute("value", i-1);
+      td.appendChild(x);
+    }
+    else {
+      td.innerHTML = "field_" + name_field[j];
+    }
+    tr.appendChild(td);
+  }
+}
+
 var edges = new Object();
 var DEBUG = false;
 var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
 var snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
-var snap_center_x = 0
+var snap_center_x = 0;
 var snap_center_y = 0;
 var line_length = 10;
 
@@ -15,6 +49,7 @@ var field3_2 = 1;
 var field3_3 = 0;
 var field3_4 = 2;
 var field4 = 0;
+
 
 /* addVertex
 ** x - An x value on the lattice
@@ -48,7 +83,7 @@ function addVertex(x, y) {
 
 function moveTo(c_x, c_y, x, y, to_dir, step) {
   if(DEBUG) {
-    console.log("moveTo(" + c_x + ", " + c_y + ", " + x + ", " +  y + ", " + to_dir + ", " + step + ")");
+    console.log("moveTo(" + c_x + ", " + c_y + ", " + x + ", " +  y + ", " + to_dir + ")");
   };
   
   addVertex(x,y);
