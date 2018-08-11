@@ -19,10 +19,12 @@ var snap = Snap();
 var snap_center_x;
 var snap_center_y;
 var line_length;
+var stroke_width;
 var zoom;
 var group;
 var timer;
-
+var resize_timer;
+var stroke_width_slider;
 /* addVertex
 ** x - An x value on the lattice
 ** y - A y value on the lattice
@@ -71,7 +73,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   snap_center_x = x2;
   snap_center_y = y2;
   line.attr({
-    strokeWidth: line_length/4,
+    strokeWidth: stroke_width,
     stroke: "#ff0000",
     strokeLinecap: "round",
   });
@@ -256,6 +258,27 @@ function createTable() {
   submit_button.setAttribute("onclick", "submitNewWorm()");
   submit_button.innerHTML = "Submit"
   body.appendChild(submit_button);
+
+  body.appendChild(document.createElement("br"));
+
+  stroke_width_slider = document.createElement("INPUT");
+  stroke_width_slider.setAttribute("type", "range");
+  stroke_width_slider.setAttribute("min", 1);
+  stroke_width_slider.setAttribute("max", 20);
+  stroke_width_slider.innerHTML = "Stroke Width";
+  stroke_width_slider.oninput = function() {
+    clearTimeout(resize_timer);
+    resize_timer = setTimeout(function() {
+      stroke_width = stroke_width_slider.value;
+      var i = 0;
+      while(group[i] != undefined && group[i].attr("strokeWidth") != (stroke_width + "px")) {
+        group[i].attr({strokeWidth: stroke_width});
+        i++;
+      }
+    }, 3000);
+  }
+  body.appendChild(stroke_width_slider);
+
 }
 
 function fixBounds() {
