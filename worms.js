@@ -72,8 +72,9 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   snap_center_y = y2;
   line.attr({
     strokeWidth: 5,
-    stroke: "#f00",
-    strokeLinecap: "round"
+    stroke: "#ff0000",
+    strokeLinecap: "round",
+    name: step
   });
 
   group.add(line);
@@ -269,10 +270,10 @@ function initWorm() {
   group = snap.g();
 
   addVertex(0,0);
-  moveTo(0, 0, -1, 0, 0);
+  moveTo(0, 0, -1, 0, 0, 1);
   // Start "moving" the worm
   timer = setTimeout(function(){
-    nextStep(0, -1, 0, 0);}, 0.25);
+    nextStep(2, -1, 0, 0);}, 0.25);
 }
 
 initWorm();
