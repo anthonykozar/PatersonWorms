@@ -64,9 +64,9 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   
   
   var x1 = snap_center_x;
-  var x2 = snap_center_x - Math.round(line_length*Math.cos(-to_dir*Math.PI/3));
+  var x2 = snap_center_x - line_length*Math.cos(-to_dir*Math.PI/3);
   var y1 = snap_center_y;
-  var y2 = snap_center_y - Math.round(line_length*Math.sin(-to_dir*Math.PI/3));
+  var y2 = snap_center_y - line_length*Math.sin(-to_dir*Math.PI/3);
   var line = snap.line(x1, y1, x2, y2);
   snap_center_x = x2;
   snap_center_y = y2;
@@ -109,7 +109,7 @@ function zoomOut(c_zoom, c_step, steps_zoom, max_zoom, step, cx, cy, cd) {
     console.log("zoomOut(" + c_zoom + ", " + c_step + ", " + steps_zoom + ", " +  max_zoom + ", " + step + ", " + cx + ", " +  cx + ", " + cy + ", " + cd + ")");
   }
   zoom = c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom);
-  snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
+  snap.attr({viewBox: (-window.innerWidth*zoom/2) + " " + (-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
   if(c_step < steps_zoom)
     timer = setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, 0.25);
   else
@@ -257,7 +257,7 @@ function createTable() {
 }
 
 function fixBounds() {
-    snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
+    snap.attr({viewBox: (-window.innerWidth*zoom/2) + " " + (-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
 }
 
 /* INITIAL STEPS
@@ -267,7 +267,7 @@ function fixBounds() {
 */
 function initWorm() {
   edges = new Object();
-  snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
+  snap.attr({viewBox: (-window.innerWidth/2) + " " + (-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
   snap_center_x = 0;
   snap_center_y = 0;
   line_length = 10;
