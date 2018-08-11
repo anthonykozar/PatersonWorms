@@ -1,16 +1,9 @@
-
-createTable();
-
 var edges = new Object();
 var DEBUG = false;
 var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
-var snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
-var snap_center_x = 0;
-var snap_center_y = 0;
-var line_length = 10;
 
-var group = snap.g();
 var zoom = 1.0;
+var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
 var field1 = 1;
 var field2 = 2;
 var field3_1 = 2;
@@ -19,6 +12,15 @@ var field3_3 = 0;
 var field3_4 = 2;
 var field4 = 0;
 
+var field_array = [field1, field2, field3_1, field3_2, field3_3, field3_4, field4];
+
+createTable();
+
+var snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
+var snap_center_x = 0;
+var snap_center_y = 0;
+var line_length = 10;
+var group = snap.g();
 
 /* addVertex
 ** x - An x value on the lattice
@@ -186,6 +188,22 @@ function nextStep(step, cx, cy, cd){
       setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
 }
 
+
+function submitNewWorm() {
+  var new_fields = [];
+  for(var i = 0; i < field_suffixes.length; i++) {
+    new_fields[i] = document.querySelector('input[name = "field' + field_suffixes[i] + '"]:checked');
+    console.log(new_fields[i]);
+    if(new_fields[i] == null) {
+      alert("Pick a selection for field" + field_suffixes[i]);
+      return false;
+    }
+  }
+  for(var i = 0; i < field_array.length; i++) {
+    field_array[i] = new_fields[i]
+  }
+}
+
 function createTable() {
   var table = document.createElement("TABLE");
   var body = document.getElementsByTagName("body")[0];
@@ -201,7 +219,6 @@ function createTable() {
   table.appendChild(header_row);
 
   var choice_field = [2, 4, 3, 3, 3, 3, 2];
-  var name_field = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
   for(var j = 0; j < choice_field.length; j++) {
     var tr = document.createElement("TR");
     table.appendChild(tr);
@@ -210,16 +227,21 @@ function createTable() {
       if(i > 0) {
         var x = document.createElement("INPUT");
         x.setAttribute("type", "radio");
-        x.setAttribute("name", "field_" + name_field[j]);
+        x.setAttribute("name", "field" + field_suffixes[j]);
         x.setAttribute("value", i-1);
         td.appendChild(x);
       }
       else {
-        td.innerHTML = "field_" + name_field[j];
+        td.innerHTML = "field" + field_suffixes[j];
       }
       tr.appendChild(td);
     }
   }
+  
+  var submit_button = document.createElement("BUTTON");
+  submit_button.setAttribute("onclick", "submitNewWorm()");
+  submit_button.innerHTML = "Submit"
+  body.appendChild(submit_button);
 }
 /* INITIAL STEPS
 ** Initially, the worm should move directly to the left.
