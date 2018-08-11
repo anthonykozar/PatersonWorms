@@ -71,7 +71,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   snap_center_x = x2;
   snap_center_y = y2;
   line.attr({
-    strokeWidth: 5,
+    strokeWidth: 2,
     stroke: "#ff0000",
     strokeLinecap: "round",
   });
