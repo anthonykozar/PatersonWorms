@@ -90,8 +90,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
         console.log(vb);
       }
       var steps_zoom = 100;
-      timer = setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.5, step, x, y, to_dir)}, 0.25);
-      zoom *= 1.5;
+      timer = setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.3, step, x, y, to_dir)}, 0.25);
       return true;
     }
   return false;
@@ -101,7 +100,8 @@ function zoomOut(c_zoom, c_step, steps_zoom, max_zoom, step, cx, cy, cd) {
   if(DEBUG) {
     console.log("zoomOut(" + c_zoom + ", " + c_step + ", " + steps_zoom + ", " +  max_zoom + ", " + step + ", " + cx + ", " +  cx + ", " + cy + ", " + cd + ")");
   }
-  snap.attr({viewBox: Math.round(-window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + Math.round(-window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom)) + " " + window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))});
+  zoom = c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom);
+  snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
   if(c_step < steps_zoom)
     timer = setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, 0.25);
   else
@@ -249,6 +249,11 @@ function createTable() {
   submit_button.innerHTML = "Submit"
   body.appendChild(submit_button);
 }
+
+function fixBounds() {
+    snap.attr({viewBox: Math.round(-window.innerWidth*zoom/2) + " " + Math.round(-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
+}
+
 /* INITIAL STEPS
 ** Initially, the worm should move directly to the left.
 ** This is how it is done by Gardner. Fixing this initial movement halts simple rotations.
@@ -256,7 +261,7 @@ function createTable() {
 */
 function initWorm() {
   edges = new Object();
-  snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
+  snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
   snap_center_x = 0;
   snap_center_y = 0;
   line_length = 10;
@@ -265,11 +270,9 @@ function initWorm() {
 
   addVertex(0,0);
   moveTo(0, 0, -1, 0, 0);
-  console.log("MOVETO DONE");
   // Start "moving" the worm
   timer = setTimeout(function(){
     nextStep(0, -1, 0, 0);}, 0.25);
-  console.log("TIMER SET");
 }
 
 initWorm();
