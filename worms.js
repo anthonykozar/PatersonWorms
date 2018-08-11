@@ -241,6 +241,8 @@ function createTable() {
         x.setAttribute("type", "radio");
         x.setAttribute("name", "field" + field_suffixes[j]);
         x.setAttribute("value", i-1);
+        if(field_array[j] == i-1)
+          x.checked = true;
         td.appendChild(x);
       }
       else {
