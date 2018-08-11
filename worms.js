@@ -1,4 +1,4 @@
-var edges = new Object();
+var edges;
 var DEBUG = false;
 var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
 
@@ -126,30 +126,30 @@ function determineMove(c_x, c_y, c_dir, step) {
   var choice = 1;
   //Determine the correct field of choice
   if(eaten == 1)
-    choice += field1;
+    choice += field_array[0];
   else if(eaten == 2)
-    choice += field2;
+    choice += field_array[1];
   else if(eaten == 3) {
     //check orientation of the true (eaten) paths
     if((c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 4) % 6]) ||
       (c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 3) % 6]))
-      choice += field3_1;
+      choice += field_array[2];
     else if((c_edges[(new_dir + 3) % 6] && c_edges[(new_dir + 4) % 6]) ||
       (c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 5) % 6]))
-      choice += field3_2;
+      choice += field_array[3];
     else if((c_edges[(new_dir + 2) % 6] && c_edges[(new_dir + 3) % 6]) ||
       (c_edges[(new_dir + 2) % 6] && c_edges[(new_dir + 4) % 6]))
-      choice += field3_3;
+      choice += field_array[4];
     else if((c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 2) % 6]) ||
       (c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 3) % 6]))
-      choice += field3_4;
+      choice += field_array[5];
     else {
       choice = 0;
       console.log("UNEXPECTED CHOICE");
     }
   }
   else if(eaten == 4)
-    choice += field4;
+    choice += field_array[6];
   
   
   var count = 0;
@@ -200,9 +200,14 @@ function submitNewWorm() {
       return false;
     }
   }
+
+  clearTimeout(timer);
+  snap.clear();
+
   for(var i = 0; i < field_array.length; i++) {
-    field_array[i] = new_fields[i]
+    field_array[i] = parseInt(new_fields[i].value);
   }
+  initWorm();
 }
 
 function createTable() {
@@ -250,7 +255,7 @@ function createTable() {
 ** Though this is just a convention and could be changed, I have left it in for consistency.
 */
 function initWorm() {
-
+  edges = new Object();
   snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
   snap_center_x = 0;
   snap_center_y = 0;
@@ -260,10 +265,11 @@ function initWorm() {
 
   addVertex(0,0);
   moveTo(0, 0, -1, 0, 0);
-
+  console.log("MOVETO DONE");
   // Start "moving" the worm
   timer = setTimeout(function(){
     nextStep(0, -1, 0, 0);}, 0.25);
+  console.log("TIMER SET");
 }
 
 initWorm();
