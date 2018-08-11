@@ -71,7 +71,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   snap_center_x = x2;
   snap_center_y = y2;
   line.attr({
-    strokeWidth: 2,
+    strokeWidth: line_length/4,
     stroke: "#ff0000",
     strokeLinecap: "round",
   });
@@ -201,7 +201,6 @@ function submitNewWorm() {
   var new_fields = [];
   for(var i = 0; i < field_suffixes.length; i++) {
     new_fields[i] = document.querySelector('input[name = "field' + field_suffixes[i] + '"]:checked');
-    console.log(new_fields[i]);
     if(new_fields[i] == null) {
       alert("Pick a selection for field" + field_suffixes[i]);
       return false;
@@ -271,7 +270,7 @@ function initWorm() {
   snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
   snap_center_x = 0;
   snap_center_y = 0;
-  line_length = 10;
+  line_length = Math.round(Math.min(window.innerWidth, window.innerHeight)/4);
   zoom = 1.0;
   group = snap.g();
 
