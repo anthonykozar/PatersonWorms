@@ -270,7 +270,7 @@ function initWorm() {
   snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
   snap_center_x = 0;
   snap_center_y = 0;
-  line_length = Math.round(Math.min(window.innerWidth, window.innerHeight)/4);
+  line_length = 10;
   zoom = 1.0;
   group = snap.g();
 
