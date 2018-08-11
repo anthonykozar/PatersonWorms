@@ -74,10 +74,17 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
     strokeWidth: 5,
     stroke: "#ff0000",
     strokeLinecap: "round",
-    name: step
   });
 
   group.add(line);
+  for(var i = 0; i < 256; i++) {
+    if(step - 4*i >= 0 && group[step-4*i] != undefined) {
+      var red = 0xff - i * 0x01;
+      group[step-4*i].attr({
+        stroke: "#" + ("0" + red.toString(16)).substr(-2) + "0000"
+      });
+    }
+  }
   //check if the line is close enough to the boundary to necessitate a shrink
   var bbox = group.getBBox();
   var vb = snap.attr("viewBox").vb.split(" ");
@@ -186,8 +193,7 @@ function nextStep(step, cx, cy, cd){
     if(updated_pos == false) {
       return false;
     };
-    if(step < 4000)
-      timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
+    timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
 }
 
 
