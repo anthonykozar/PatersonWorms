@@ -2,7 +2,6 @@ var edges = new Object();
 var DEBUG = false;
 var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
 
-var zoom = 1.0;
 var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
 var field1 = 1;
 var field2 = 2;
@@ -16,11 +15,13 @@ var field_array = [field1, field2, field3_1, field3_2, field3_3, field3_4, field
 
 createTable();
 
-var snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
-var snap_center_x = 0;
-var snap_center_y = 0;
-var line_length = 10;
-var group = snap.g();
+var snap;
+var snap_center_x;
+var snap_center_y;
+var line_length;
+var zoom;
+var group;
+var timer;
 
 /* addVertex
 ** x - An x value on the lattice
@@ -89,7 +90,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
         console.log(vb);
       }
       var steps_zoom = 100;
-      setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.5, step, x, y, to_dir)}, 0.25);
+      timer = setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.5, step, x, y, to_dir)}, 0.25);
       zoom *= 1.5;
       return true;
     }
@@ -102,9 +103,9 @@ function zoomOut(c_zoom, c_step, steps_zoom, max_zoom, step, cx, cy, cd) {
   }
   snap.attr({viewBox: Math.round(-window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + Math.round(-window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))/2) + " " + window.innerWidth*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom)) + " " + window.innerHeight*(c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom))});
   if(c_step < steps_zoom)
-    setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, 0.25);
+    timer = setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, 0.25);
   else
-    setTimeout(function(){nextStep(step, cx, cy, cd);}, 0.25);
+    timer = setTimeout(function(){nextStep(step, cx, cy, cd);}, 0.25);
 }
 
 function determineMove(c_x, c_y, c_dir, step) {
@@ -185,7 +186,7 @@ function nextStep(step, cx, cy, cd){
       return false;
     };
     if(step < 4000)
-      setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
+      timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
 }
 
 
@@ -248,9 +249,21 @@ function createTable() {
 ** This is how it is done by Gardner. Fixing this initial movement halts simple rotations.
 ** Though this is just a convention and could be changed, I have left it in for consistency.
 */
-addVertex(0,0);
-moveTo(0, 0, -1, 0, 0);
+function initWorm() {
 
-// Start "moving" the worm
-setTimeout(function(){
-  nextStep(0, -1, 0, 0);}, 0.25);
+  snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
+  snap_center_x = 0;
+  snap_center_y = 0;
+  line_length = 10;
+  zoom = 1.0;
+  group = snap.g();
+
+  addVertex(0,0);
+  moveTo(0, 0, -1, 0, 0);
+
+  // Start "moving" the worm
+  timer = setTimeout(function(){
+    nextStep(0, -1, 0, 0);}, 0.25);
+}
+
+initWorm();
