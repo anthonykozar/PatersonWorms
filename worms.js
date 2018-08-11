@@ -15,7 +15,7 @@ var field_array = [field1, field2, field3_1, field3_2, field3_3, field3_4, field
 
 createTable();
 
-var snap;
+var snap = Snap();
 var snap_center_x;
 var snap_center_y;
 var line_length;
@@ -251,7 +251,7 @@ function createTable() {
 */
 function initWorm() {
 
-  snap = Snap().attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
+  snap.attr({viewBox: Math.round(-window.innerWidth/2) + " " + Math.round(-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight});
   snap_center_x = 0;
   snap_center_y = 0;
   line_length = 10;
