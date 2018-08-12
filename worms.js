@@ -258,8 +258,13 @@ function createTable() {
 
   body.appendChild(document.createElement("br"));
 
+  stroke_width_slider_label = document.createElement("label");
+  stroke_width_slider_label.setAttribute("for", "stroke_width_slider");
+  stroke_width_slider_label.innerHTML = "Stroke Width";
+
   stroke_width_slider = document.createElement("INPUT");
   stroke_width_slider.setAttribute("type", "range");
+  stroke_width_slider.setAttribute("name", "stroke_width_slider");
   stroke_width_slider.setAttribute("min", 1);
   stroke_width_slider.setAttribute("max", 20);
   stroke_width_slider.innerHTML = "Stroke Width";
@@ -275,13 +280,19 @@ function createTable() {
       }
     }, 3000);
   }
+  body.appendChild(stroke_width_slider_label);
+  body.appendChild(document.createElement("br"));
   body.appendChild(stroke_width_slider);
 
   body.appendChild(document.createElement("br"));
 
+  speed_slider_label = document.createElement("label");
+  speed_slider_label.setAttribute("for", "speed_slider");
+  speed_slider_label.innerHTML = "Speed";
+
   speed_slider = document.createElement("INPUT");
   speed_slider.setAttribute("type", "range");
-  speed_slider.setAttribute("id", "speed_slider");
+  speed_slider.setAttribute("name", "speed_slider");
   speed_slider.setAttribute("min", -5);
   speed_slider.setAttribute("max", 5);
   speed_slider.setAttribute("step", 1);
@@ -290,6 +301,8 @@ function createTable() {
   speed_slider.oninput = function() {
     speed = 2**parseInt(speed_slider.value) * 100;
   }
+  body.appendChild(speed_slider_label);
+  body.appendChild(document.createElement("br"));
   body.appendChild(speed_slider);
 }
 
