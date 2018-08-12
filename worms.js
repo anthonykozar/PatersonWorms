@@ -13,15 +13,16 @@ var field4 = 0;
 
 var field_array = [field1, field2, field3_1, field3_2, field3_3, field3_4, field4];
 
+var speed = 0.25;
+var zoom_speed = 0.25
+var stroke_width = 2;
+
 createTable();
 
 var snap = Snap();
 var snap_center_x;
 var snap_center_y;
 var line_length;
-var stroke_width;
-var speed = 0.25;
-var zoom_speed = 0.25
 var zoom;
 var group;
 var timer;
@@ -268,6 +269,7 @@ function createTable() {
   stroke_width_slider.setAttribute("min", 1);
   stroke_width_slider.setAttribute("max", 20);
   stroke_width_slider.innerHTML = "Stroke Width";
+  stroke_width_slider.value = stroke_width;
   stroke_width_slider.oninput = function() {
     clearTimeout(resize_timer);
     resize_timer = setTimeout(function() {
