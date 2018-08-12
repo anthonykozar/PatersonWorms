@@ -20,6 +20,8 @@ var snap_center_x;
 var snap_center_y;
 var line_length;
 var stroke_width;
+var speed = 0.25;
+var zoom_speed = 0.25
 var zoom;
 var group;
 var timer;
@@ -100,7 +102,7 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
         console.log(vb);
       }
       var steps_zoom = 100;
-      timer = setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.3, step, x, y, to_dir)}, 0.25);
+      timer = setTimeout(function(){zoomOut(zoom, 1, steps_zoom, zoom*1.3, step, x, y, to_dir)}, zoom_speed);
       return true;
     }
   return false;
@@ -113,9 +115,9 @@ function zoomOut(c_zoom, c_step, steps_zoom, max_zoom, step, cx, cy, cd) {
   zoom = c_zoom+(c_step*(max_zoom-c_zoom)/steps_zoom);
   snap.attr({viewBox: (-window.innerWidth*zoom/2) + " " + (-window.innerHeight*zoom/2) + " " + window.innerWidth*zoom + " " + window.innerHeight*zoom});
   if(c_step < steps_zoom)
-    timer = setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, 0.25);
+    timer = setTimeout(function(){zoomOut(c_zoom, c_step+1, steps_zoom, max_zoom, step, cx, cy, cd)}, zoom_speed);
   else
-    timer = setTimeout(function(){nextStep(step, cx, cy, cd);}, 0.25);
+    timer = setTimeout(function(){nextStep(step, cx, cy, cd);}, speed);
 }
 
 function determineMove(c_x, c_y, c_dir, step) {
@@ -195,7 +197,7 @@ function nextStep(step, cx, cy, cd){
     if(updated_pos == false) {
       return false;
     };
-    timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, 0.25);
+    timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, speed);
 }
 
 
@@ -279,6 +281,17 @@ function createTable() {
   }
   body.appendChild(stroke_width_slider);
 
+  speed_slider = document.createElement("INPUT");
+  speed_slider.setAttribute("type", "range");
+  speed_slider.setAttribute("id", "speed_slider");
+  speed_slider.setAttribute("min", 0.25);
+  speed_slider.setAttribute("max", 1000);
+  speed_slider.innerHTML = "Speed";
+  speed_slider.value = speed;
+  speed_slider.oninput = function() {
+    speed = parseFloat(speed_slider.value);
+  }
+  body.appendChild(speed_slider);
 }
 
 function fixBounds() {
@@ -303,7 +316,7 @@ function initWorm() {
   moveTo(0, 0, -1, 0, 0, 1);
   // Start "moving" the worm
   timer = setTimeout(function(){
-    nextStep(2, -1, 0, 0);}, 0.25);
+    nextStep(2, -1, 0, 0);}, speed);
 }
 
 initWorm();
