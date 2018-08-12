@@ -13,8 +13,8 @@ var field4 = 0;
 
 var field_array = [field1, field2, field3_1, field3_2, field3_3, field3_4, field4];
 
-var speed = 0.25;
-var zoom_speed = 0.25
+var speed = 100;
+var zoom_speed = 10;
 var stroke_width = 2;
 
 createTable();
@@ -283,15 +283,18 @@ function createTable() {
   }
   body.appendChild(stroke_width_slider);
 
+  body.appendChild(document.createElement("br"));
+
   speed_slider = document.createElement("INPUT");
   speed_slider.setAttribute("type", "range");
   speed_slider.setAttribute("id", "speed_slider");
-  speed_slider.setAttribute("min", 0.25);
-  speed_slider.setAttribute("max", 1000);
+  speed_slider.setAttribute("min", -5);
+  speed_slider.setAttribute("max", 5);
+  speed_slider.setAttribute("step", 1);
   speed_slider.innerHTML = "Speed";
-  speed_slider.value = speed;
+  speed_slider.value = 0;
   speed_slider.oninput = function() {
-    speed = parseFloat(speed_slider.value);
+    speed = 2**parseInt(speed_slider.value) * 100;
   }
   body.appendChild(speed_slider);
 }
