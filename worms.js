@@ -3,15 +3,9 @@ var DEBUG = false;
 var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
 
 var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
-var field1 = 1;
-var field2 = 2;
-var field3_1 = 2;
-var field3_2 = 1;
-var field3_3 = 0;
-var field3_4 = 2;
-var field4 = 0;
 
-var field_array = [field1, field2, field3_1, field3_2, field3_3, field3_4, field4];
+//Default field choices
+var field_array = [1, 2, 2, 1, 0, 2, 0];
 
 var speed = 100;
 var zoom_speed = 10;
