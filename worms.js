@@ -278,7 +278,7 @@ function createTable() {
         group[i].attr({strokeWidth: stroke_width});
         i++;
       }
-    }, 3000);
+    }, 200);
   }
   body.appendChild(stroke_width_slider_label);
   body.appendChild(document.createElement("br"));
