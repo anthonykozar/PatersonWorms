@@ -73,11 +73,10 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   edges[x][y][((to_dir + 3) % 6)] = true;
   edges[c_x][c_y][to_dir] = true;
   
-  
   var x1 = snap_center_x;
-  var x2 = snap_center_x - line_length*Math.cos(-to_dir*Math.PI/3);
+  var x2 = snap_center_x - line_length*Math.cos(-((to_dir + 3) % 6)*Math.PI/3);
   var y1 = snap_center_y;
-  var y2 = snap_center_y - line_length*Math.sin(-to_dir*Math.PI/3);
+  var y2 = snap_center_y - line_length*Math.sin(-((to_dir + 3) % 6)*Math.PI/3);
   var line = snap.line(x1, y1, x2, y2);
   snap_center_x = x2;
   snap_center_y = y2;
