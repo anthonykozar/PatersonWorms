@@ -7,7 +7,13 @@ var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
 //Default field choices
 var field_array = [1, 2, 2, 1, 0, 2, 0];
 
-//Gardner's notation is annoyingly difficult to generalize
+//Gardner's notation is annoyingly difficult to generalize.
+//My notation consists of how many open paths to skip (going ccw from the direction the worm arrived in).
+//To convert from mine to Gardner's, the arrays below handle the various cases.
+//Thus a 0 in field_array[0] corresponds to a selection of a for field 1.
+//Gardner's notation means this skips 1 open path going ccw from the arrival path, whereas mine would indicate that the first open path should be taken (skip 0).
+//This gets confusing quickly, and I may refactor this out later since it already makes the code terse.
+
 var choice1_f = [1, 0];
 var choice2_f = [3,2,1,0];
 var choice3t_f = [2,1,0];
@@ -152,42 +158,58 @@ function determineMove(c_x, c_y, c_dir, step) {
     if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 4) % 6])
     {
       choice += choice3t_f[field_array[2]];
-      console.log("choice3t_f[field_array[2]]: " + choice3t_f[field_array[2]])
+      if(DEBUG){
+        console.log("choice3t_f[field_array[2]]: " + choice3t_f[field_array[2]])
+      }
     }
     else if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 3) % 6])
     {
       choice += choice3b1_f[field_array[2]];
-      console.log("choice3b1_f[field_array[2]]: " + choice3b1_f[field_array[2]])
+      if(DEBUG){
+        console.log("choice3b1_f[field_array[2]]: " + choice3b1_f[field_array[2]])
+      }
     }
     else if(c_edges[(new_dir + 3) % 6] && c_edges[(new_dir + 4) % 6])
     {
       choice += choice3t_f[field_array[3]];
-      console.log("choice3t_f[field_array[3]]: " + choice3t_f[field_array[3]])
+      if(DEBUG){
+        console.log("choice3t_f[field_array[3]]: " + choice3t_f[field_array[3]])
+      }
     }
     else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 5) % 6])
     {
       choice += choice3b2_f[field_array[3]];
-      console.log("choice3b2_f[field_array[3]]: " + choice3b2_f[field_array[3]])
+      if(DEBUG){
+        console.log("choice3b2_f[field_array[3]]: " + choice3b2_f[field_array[3]])
+      }
     }
     else if(c_edges[(new_dir + 2) % 6] && c_edges[(new_dir + 3) % 6])
     {
       choice += choice3t_f[field_array[4]];
-      console.log("choice3t_f[field_array[4]]: " + choice3t_f[field_array[4]])
+      if(DEBUG){
+        console.log("choice3t_f[field_array[4]]: " + choice3t_f[field_array[4]])
+      }
     }
     else if(c_edges[(new_dir + 2) % 6] && c_edges[(new_dir + 4) % 6])
     {
       choice += choice3b3_f[field_array[4]];
-      console.log("choice3b3_f[field_array[4]]: " + choice3b3_f[field_array[4]])
+      if(DEBUG){
+        console.log("choice3b3_f[field_array[4]]: " + choice3b3_f[field_array[4]])
+      }
     }
     else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 2) % 6])
     {
       choice += choice3t_f[field_array[5]];
-      console.log("choice3t_f[field_array[5]]: " + choice3t_f[field_array[5]])
+      if(DEBUG){
+        console.log("choice3t_f[field_array[5]]: " + choice3t_f[field_array[5]])
+      }
     }
     else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 3) % 6])
     {
       choice += choice3b4_f[field_array[5]];
-      console.log("choice3b4_f[field_array[5]]: " + choice3b4_f[field_array[5]])
+      if(DEBUG){
+        console.log("choice3b4_f[field_array[5]]: " + choice3b4_f[field_array[5]])
+      }
     }
     else {
       choice = 0;
