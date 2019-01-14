@@ -1,11 +1,13 @@
 var edges;
-var DEBUG = false;
-var DIR_MATRIX = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+var DEBUG = true;
+var DIR_MATRIX = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
 
 var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
 
 //Default field choices
 var field_array = [1, 2, 2, 1, 0, 2, 0];
+//The following are interesting field arrays:
+// [0, 2, 0, 2, 2, 0, 0]
 
 //Gardner's notation is annoyingly difficult to generalize.
 //My notation consists of how many open paths to skip (going ccw from the direction the worm arrived in).
@@ -80,9 +82,9 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   edges[c_x][c_y][to_dir] = true;
   
   var x1 = snap_center_x;
-  var x2 = snap_center_x - line_length*Math.cos(-((to_dir + 3) % 6)*Math.PI/3);
+  var x2 = snap_center_x - line_length*Math.cos(((to_dir + 3) % 6)*Math.PI/3);
   var y1 = snap_center_y;
-  var y2 = snap_center_y - line_length*Math.sin(-((to_dir + 3) % 6)*Math.PI/3);
+  var y2 = snap_center_y - line_length*Math.sin(((to_dir + 3) % 6)*Math.PI/3);
   var line = snap.line(x1, y1, x2, y2);
   snap_center_x = x2;
   snap_center_y = y2;
@@ -155,56 +157,56 @@ function determineMove(c_x, c_y, c_dir, step) {
     choice += choice2_f[field_array[1]];
   else if(eaten == 3) {
     //check orientation of the true (eaten) paths
-    if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 4) % 6])
+    if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 2) % 6])
     {
       choice += choice3t_f[field_array[2]];
       if(DEBUG){
         console.log("choice3t_f[field_array[2]]: " + choice3t_f[field_array[2]])
       }
     }
-    else if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 3) % 6])
+    else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 3) % 6])
     {
       choice += choice3b1_f[field_array[2]];
       if(DEBUG){
         console.log("choice3b1_f[field_array[2]]: " + choice3b1_f[field_array[2]])
       }
     }
-    else if(c_edges[(new_dir + 3) % 6] && c_edges[(new_dir + 4) % 6])
+    else if(c_edges[(new_dir + 3) % 6] && c_edges[(new_dir + 2) % 6])
     {
       choice += choice3t_f[field_array[3]];
       if(DEBUG){
         console.log("choice3t_f[field_array[3]]: " + choice3t_f[field_array[3]])
       }
     }
-    else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 5) % 6])
+    else if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 1) % 6])
     {
       choice += choice3b2_f[field_array[3]];
       if(DEBUG){
         console.log("choice3b2_f[field_array[3]]: " + choice3b2_f[field_array[3]])
       }
     }
-    else if(c_edges[(new_dir + 2) % 6] && c_edges[(new_dir + 3) % 6])
+    else if(c_edges[(new_dir + 4) % 6] && c_edges[(new_dir + 3) % 6])
     {
       choice += choice3t_f[field_array[4]];
       if(DEBUG){
         console.log("choice3t_f[field_array[4]]: " + choice3t_f[field_array[4]])
       }
     }
-    else if(c_edges[(new_dir + 2) % 6] && c_edges[(new_dir + 4) % 6])
+    else if(c_edges[(new_dir + 4) % 6] && c_edges[(new_dir + 2) % 6])
     {
       choice += choice3b3_f[field_array[4]];
       if(DEBUG){
         console.log("choice3b3_f[field_array[4]]: " + choice3b3_f[field_array[4]])
       }
     }
-    else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 2) % 6])
+    else if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 4) % 6])
     {
       choice += choice3t_f[field_array[5]];
       if(DEBUG){
         console.log("choice3t_f[field_array[5]]: " + choice3t_f[field_array[5]])
       }
     }
-    else if(c_edges[(new_dir + 1) % 6] && c_edges[(new_dir + 3) % 6])
+    else if(c_edges[(new_dir + 5) % 6] && c_edges[(new_dir + 3) % 6])
     {
       choice += choice3b4_f[field_array[5]];
       if(DEBUG){
@@ -376,9 +378,9 @@ function fixBounds() {
 ** This is how it is done by Gardner. Fixing this initial movement halts simple rotations.
 ** Though this is just a convention and could be changed, I have left it in for consistency.
 */
-//  5   6
-//0 ---- 3
-//  1   2
+//  4   5
+//3 ---- 0
+//  2   1
 function initWorm() {
   edges = new Object();
   snap.attr({viewBox: (-window.innerWidth/2) + " " + (-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
@@ -389,10 +391,10 @@ function initWorm() {
   group = snap.g();
 
   addVertex(0,0);
-  moveTo(0, 0, -1, 0, 0, 1);
+  moveTo(0, 0, 1, 0, 0, 1);
   // Start "moving" the worm
   timer = setTimeout(function(){
-    nextStep(2, -1, 0, 0);}, speed);
+    nextStep(2, 1, 0, 0);}, speed);
 }
 
 initWorm();
