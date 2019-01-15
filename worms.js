@@ -1,5 +1,5 @@
 var edges;
-var DEBUG = true;
+var DEBUG = false;
 var DIR_MATRIX = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
 
 var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
@@ -16,14 +16,14 @@ var field_array = [1, 2, 2, 1, 0, 2, 0];
 //Gardner's notation means this skips 1 open path going ccw from the arrival path, whereas mine would indicate that the first open path should be taken (skip 0).
 //This gets confusing quickly, and I may refactor this out later since it already makes the code terse.
 
-var choice1_f = [1, 0];
-var choice2_f = [3,2,1,0];
-var choice3t_f = [2,1,0];
-var choice3b1_f = [0,2,1];
-var choice3b2_f = [1,2,0];
-var choice3b3_f = [1,2,0];
-var choice3b4_f = [2, 1, 0];
-var choice4_f = [1, 0];
+var choice1_f = [3, 4];
+var choice2_f = [0,1,2,3];
+var choice3t_f = [0,1,2];
+var choice3b1_f = [2,0,1];
+var choice3b2_f = [1,0,2];
+var choice3b3_f = [1,0,2];
+var choice3b4_f = [0, 1, 2];
+var choice4_f = [0, 1];
 
 
 
