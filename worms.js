@@ -6,14 +6,28 @@ var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
 
 //Default field choices
 var field_array = [1, 2, 2, 1, 0, 2, 0];
+
+
+//  4   5
+//3 ---- 0
+//  2   1
+
+
+//  (-1,1)       (0,1)
+//        \     /
+//(-1,0) --(0,0)-- (1,0)
+//        /     \
+//  (0,-1)       (1,-1)
+
 //The following are interesting field arrays:
 // [0, 2, 0, 2, 2, 0, 0]
 
-//Gardner's notation is annoyingly difficult to generalize.
+//Gardner's notation is annoyingly difficult to program in a concise fashion due to the seemingly random selection of choices.
 //My notation consists of how many open paths to skip (going ccw from the direction the worm arrived in).
 //To convert from mine to Gardner's, the arrays below handle the various cases.
 //Thus a 0 in field_array[0] corresponds to a selection of a for field 1.
-//Gardner's notation means this skips 1 open path going ccw from the arrival path, whereas mine would indicate that the first open path should be taken (skip 0).
+//Then choice1_f[0] is 3, so we pass by 3 uneaten paths (going clockwise) and select the next uneaten path.
+//Unfortunately, going clockwise seems to be the only possibility since js insists that -1 % n = -1 even though its modulus is n-1.
 //This gets confusing quickly, and I may refactor this out later since it already makes the code terse.
 
 var choice1_f = [3, 4];
@@ -42,6 +56,7 @@ var group;
 var timer;
 var resize_timer;
 var stroke_width_slider;
+
 /* addVertex
 ** x - An x value on the lattice
 ** y - A y value on the lattice
@@ -95,6 +110,8 @@ function moveTo(c_x, c_y, x, y, to_dir, step) {
   });
 
   group.add(line);
+
+  //This sets the color of each line segment. 
   for(var i = 0; i < 256; i++) {
     if(step - 4*i >= 0 && group[step-4*i] != undefined) {
       var red = 0xff - i * 0x01;
