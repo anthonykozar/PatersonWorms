@@ -150,7 +150,9 @@ int* determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     y += DIR_MATRIX[new_dir][1];
     
     int zooming = moveTo(map, c_x, c_y, x, y, new_dir, step);
-    retval = {x, y, new_dir};
+    retval[0] = x;
+    retval[1] = y;
+    retval[2] = new_dir;
     return retval;
   }
   return 0;
