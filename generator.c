@@ -145,10 +145,12 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   
   
   int count = 0;
+  printf("choice: %d\n", choice);
   while(choice != 0 && count != 5) {
     count += 1;
-    choice -= !((c_edges & (1 << count)) >> count);
+    choice -= !(c_edges & (1 << ((new_dir+count) % 6)));
   }
+  printf("count: %d\n", count);
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
     x += DIR_MATRIX[new_dir][0];
