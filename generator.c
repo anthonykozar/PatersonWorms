@@ -7,9 +7,11 @@
 /*Possible optimizations:
 	Use 6 bits for each point (requires allocation of 1 byte, could use a char)
 */
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
-int DEBUG = 0;
+int DEBUG = 1;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
 int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
 int choice1_f[2] = {3, 4};
@@ -32,9 +34,9 @@ typedef struct {
 	char edges;
 } point;
 
-int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
+void move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
   if(DEBUG) {
-    printf("moveTo(%d, %d, %d, %d, %d)", c_x, c_y, x, y, to_dir);
+    printf("move_to(%d, %d, %d, %d, %d)\n", c_x, c_y, x, y, to_dir);
   };
   
   map[x][y].edges |= 1 << ((to_dir + 3) % 6);
@@ -47,16 +49,19 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
 
   snap_center_x = x2;
   snap_center_y = y2;
-
-  return 0;
 }
-int* determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
+
+int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   if(DEBUG) {
-    printf("determineMove(%d, %d, %d, %d", c_x, c_y, c_dir, step);
+    printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
   }
   char c_edges = map[c_x][c_y].edges;
   if(DEBUG) {
-    printf("c_edges:\t%c", map[c_x][c_y].edges);
+  	int w;
+  	printf("c_edges: ");
+  	for(w = 0; w < 6; w++)
+    	printf("%d ", 0 || map[c_x][c_y].edges & (1 << w));
+    printf("\n");
   }
   //check in order of preference
   int x = c_x;
@@ -78,56 +83,56 @@ int* determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     {
       choice += choice3t_f[field_array[2]];
       if(DEBUG){
-        printf("choice3t_f[field_array[2]]: %d", choice3t_f[field_array[2]]);
+        printf("choice3t_f[field_array[2]]: %d\n", choice3t_f[field_array[2]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 1) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
     {
       choice += choice3b1_f[field_array[2]];
       if(DEBUG){
-        printf("choice3b1_f[field_array[2]]: %d", choice3b1_f[field_array[2]]);
+        printf("choice3b1_f[field_array[2]]: %d\n", choice3b1_f[field_array[2]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 3) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
     {
       choice += choice3t_f[field_array[3]];
       if(DEBUG){
-        printf("choice3t_f[field_array[3]]: %d", choice3t_f[field_array[3]]);
+        printf("choice3t_f[field_array[3]]: %d\n", choice3t_f[field_array[3]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 1) % 6)))
     {
       choice += choice3b2_f[field_array[3]];
       if(DEBUG){
-        printf("choice3b2_f[field_array[3]]: %d", choice3b2_f[field_array[3]]);
+        printf("choice3b2_f[field_array[3]]: %d\n", choice3b2_f[field_array[3]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 4) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
     {
       choice += choice3t_f[field_array[4]];
       if(DEBUG){
-        printf("choice3t_f[field_array[4]]: %d", choice3t_f[field_array[4]]);
+        printf("choice3t_f[field_array[4]]: %d\n", choice3t_f[field_array[4]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 4) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
     {
       choice += choice3b3_f[field_array[4]];
       if(DEBUG){
-        printf("choice3b3_f[field_array[4]]: %d", choice3b3_f[field_array[4]]);
+        printf("choice3b3_f[field_array[4]]: %d\n", choice3b3_f[field_array[4]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 4) % 6)))
     {
       choice += choice3t_f[field_array[5]];
       if(DEBUG){
-        printf("choice3t_f[field_array[5]]: %d", choice3t_f[field_array[5]]);
+        printf("choice3t_f[field_array[5]]: %d\n", choice3t_f[field_array[5]]);
       }
     }
     else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
     {
       choice += choice3b4_f[field_array[5]];
       if(DEBUG){
-        printf("choice3b4_f[field_array[5]]: %d", choice3b4_f[field_array[5]]);
+        printf("choice3b4_f[field_array[5]]: %d\n", choice3b4_f[field_array[5]]);
       }
     }
     else {
@@ -149,17 +154,20 @@ int* determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     x += DIR_MATRIX[new_dir][0];
     y += DIR_MATRIX[new_dir][1];
     
-    int zooming = moveTo(map, c_x, c_y, x, y, new_dir, step);
+    move_to(map, c_x, c_y, x, y, new_dir, step);
     retval[0] = x;
     retval[1] = y;
     retval[2] = new_dir;
-    return retval;
+    return 1;
   }
   return 0;
 }
 
-void next_step() {
-
+void next_step(point** map, int step, int cx, int cy, int cd){  
+    int term = determine_move(map, cx, cy, cd, step);
+    if(term == 0)
+      return;
+    next_step(map, step+1, retval[0], retval[1], retval[2]);
 }
 
 point** init_graph(int size) {
@@ -171,15 +179,17 @@ point** init_graph(int size) {
 }
 
 int main() {
-	int size = 1000;
+	int size = 10;
 	point** map = init_graph(size);
 	int i,j;
-	// for(i = 0; i < size; i++) {
-	// 	for(j = 0; j < size; j++)
-	// 		printf("%c ", map{i}{j}.edges);
-	// 	printf("\n");
-	// }
+
 	printf("Total size: %d bytes\n", 8+size*8+size*size);
-
-
+  move_to(map, 5, 5, 6, 5, 0, 1);
+  // Start "moving" the worm
+	next_step(map, 2, 6, 5, 0);
+	for(i = 0; i < size; i++) {
+		for(j = 0; j < size; j++)
+			printf("%c ", map[i][j].edges+70);
+		printf("\n");
+	}
 }
