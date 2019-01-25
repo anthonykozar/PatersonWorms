@@ -21,6 +21,9 @@ int choice3b3_f[3] = {1,0,2};
 int choice3b4_f[3] = {0, 1, 2};
 int choice4_f[2] = {0, 1};
 
+int retval[3] = {0, 0, 0};
+
+
 double snap_center_x;
 double snap_center_y;
 double line_length;
@@ -45,6 +48,111 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
   snap_center_x = x2;
   snap_center_y = y2;
 
+  return 0;
+}
+int* determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
+  if(DEBUG) {
+    printf("determineMove(%d, %d, %d, %d", c_x, c_y, c_dir, step);
+  }
+  char c_edges = map[c_x][c_y].edges;
+  if(DEBUG) {
+    printf("c_edges:\t%c", map[c_x][c_y].edges);
+  }
+  //check in order of preference
+  int x = c_x;
+  int y = c_y;
+  int new_dir = (c_dir + 3) % 6;
+  int eaten = 0;
+  int i;
+  for(i = 0; i < 6; i++){eaten += (c_edges & (1 << i)) >> i;}
+
+  int choice = 1;
+  //Determine the correct field of choice
+  if(eaten == 1)
+    choice += choice1_f[field_array[0]];
+  else if(eaten == 2)
+    choice += choice2_f[field_array[1]];
+  else if(eaten == 3) {
+    //check orientation of the true (eaten) paths
+    if(c_edges & (1 << ((new_dir + 1) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
+    {
+      choice += choice3t_f[field_array[2]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[2]]: %d", choice3t_f[field_array[2]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 1) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
+    {
+      choice += choice3b1_f[field_array[2]];
+      if(DEBUG){
+        printf("choice3b1_f[field_array[2]]: %d", choice3b1_f[field_array[2]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 3) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
+    {
+      choice += choice3t_f[field_array[3]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[3]]: %d", choice3t_f[field_array[3]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 1) % 6)))
+    {
+      choice += choice3b2_f[field_array[3]];
+      if(DEBUG){
+        printf("choice3b2_f[field_array[3]]: %d", choice3b2_f[field_array[3]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 4) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
+    {
+      choice += choice3t_f[field_array[4]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[4]]: %d", choice3t_f[field_array[4]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 4) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
+    {
+      choice += choice3b3_f[field_array[4]];
+      if(DEBUG){
+        printf("choice3b3_f[field_array[4]]: %d", choice3b3_f[field_array[4]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 4) % 6)))
+    {
+      choice += choice3t_f[field_array[5]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[5]]: %d", choice3t_f[field_array[5]]);
+      }
+    }
+    else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
+    {
+      choice += choice3b4_f[field_array[5]];
+      if(DEBUG){
+        printf("choice3b4_f[field_array[5]]: %d", choice3b4_f[field_array[5]]);
+      }
+    }
+    else {
+      choice = 0;
+      printf("UNEXPECTED CHOICE");
+    }
+  }
+  else if(eaten == 4)
+    choice += choice4_f[field_array[6]];
+  
+  
+  int count = 0;
+  while(choice != 0 && count != 5) {
+    count += 1;
+    choice -= !((c_edges & (1 << count)) >> count);
+  }
+  if(choice == 0) {
+    new_dir = (new_dir+count) % 6;
+    x += DIR_MATRIX[new_dir][0];
+    y += DIR_MATRIX[new_dir][1];
+    
+    int zooming = moveTo(map, c_x, c_y, x, y, new_dir, step);
+    retval = {x, y, new_dir};
+    return retval;
+  }
   return 0;
 }
 
