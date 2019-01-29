@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <math.h>
 
-int DEBUG = 1;
+int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
 int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
 int choice1_f[2] = {3, 4};
@@ -24,6 +24,7 @@ int choice3b4_f[3] = {0, 1, 2};
 int choice4_f[2] = {0, 1};
 
 int retval[3] = {0, 0, 0};
+int size = 10;
 
 
 double snap_center_x;
@@ -42,6 +43,8 @@ void move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) 
   map[x][y].edges |= 1 << ((to_dir + 3) % 6);
   map[c_x][c_y].edges |= 1 << (to_dir % 6);
   
+  //TODO: Remove these calculations since I am just doing it all at the end
+
   double x1 = snap_center_x;
   double x2 = snap_center_x - line_length*cos(((to_dir + 3) % 6)*M_PI/3);
   double y1 = snap_center_y;
@@ -49,6 +52,7 @@ void move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) 
 
   snap_center_x = x2;
   snap_center_y = y2;
+
 }
 
 int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
@@ -145,17 +149,18 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   
   
   int count = 0;
-  printf("choice: %d\n", choice);
   while(choice != 0 && count != 5) {
     count += 1;
     choice -= !(c_edges & (1 << ((new_dir+count) % 6)));
   }
-  printf("count: %d\n", count);
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
     x += DIR_MATRIX[new_dir][0];
     y += DIR_MATRIX[new_dir][1];
-    
+   
+    //TODO: Check to make sure movement doesn't take you out of bounds
+    //That would really fuck shit up
+
     move_to(map, c_x, c_y, x, y, new_dir, step);
     retval[0] = x;
     retval[1] = y;
@@ -180,18 +185,90 @@ point** init_graph(int size) {
 	return map;
 }
 
+void map_to_svg(point ** map) {
+	/*Iterate through map
+		For each encounter, set to false (and set its corresponding edge in another node as false)
+		Create a line based on this.
+		Going to need to calculate lattice point coordinates based on line length
+		Optimization (storage but not runtime): Truncate coordinates to two or three decimal places
+			This is because svg size is dependent on the number of characters in the markup
+			Not truncating leaves about 17*numLines characters
+	*/
+
+	//Let x y = 0,0 be the center. Moving along the horizontal lines translates you 
+	//http://clintbellanger.net/articles/isometric_math/
+
+
+	//Try timing this with it all in one giant printf, and one where it's broken up. I'm not sure how much overhead
+	//there will be from calling printf again just to print the closing tag
+	int i,j;
+	for(i = 0; i < size; i++) {
+		for(j = 0; j < size; j++) {
+			point p = map[i][j];
+			if(DEBUG) {
+		  	int w;
+		  	printf("c_edges: ");
+		  	for(w = 0; w < 6; w++)
+		    	printf("%d ", 0 || map[i][j].edges & (1 << w));
+		    printf("\n");
+		  }
+			if(p.edges == 0)
+				continue;
+			char c = p.edges;
+			int t;
+
+
+// (-5, -5) (-1,1) 					(5, -5) (0,1)
+//                \        /
+//(-10, 0) (-1,0) --(0,0)-- (10, 0) (1,0)
+//        				/        \
+// (-5, 5) (0,-1)           (5, 5) (1,-1)
+			for(t = 0; t < 6; t++) {
+				//if there is an edge in this direction
+				if(c & (1 << t)) {
+					//we need to:
+					//draw the line
+					//set this bit to 0 in map and set its partner's bit to 0 as well.
+					//might want to do a bounds check here too.
+					double p_y, p_ny;
+					int p_x, p_nx;
+					//If n_y is odd
+					int n_x = i+DIR_MATRIX[t][0];
+					int n_y = j+DIR_MATRIX[t][1];
+					p_y = -5*sqrt(3)*j;
+					p_ny = -5*sqrt(3)*n_y;
+					p_x = 10*i + 5*j;
+					p_nx = 10*n_x + 5*n_y;
+					map[i][j].edges &= ~(1 << t);
+					map[n_x][n_y].edges &= ~(1 << ((t+3) % 6));
+					printf("<line x1=\"%d\" x2=\"%d\" y1=\"%.3f\" y2=\"%.3f\" stroke=\"#fd0000\" style=\"stroke-width: 2; stroke-linecap: round;\">", p_x, p_nx, p_y, p_ny);
+					printf("</line><!--(%d, %d) to (%d, %d)-->\n", i, j, n_x, n_y);
+				}
+			}
+		}
+	}
+}
+
+void create_svg(point ** map) {
+	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", -20*size/2, -20*size/2, 20*size, 20*size);
+	printf("\t<g>\n");
+	map_to_svg(map);
+	printf("\t</g>\n");
+	printf("</svg>\n");
+}
+
 int main() {
-	int size = 10;
 	point** map = init_graph(size);
 	int i,j;
 
-	printf("Total size: %d bytes\n", 8+size*8+size*size);
+	//printf("Total size: %d bytes\n", 8+size*8+size*size);
   move_to(map, 5, 5, 6, 5, 0, 1);
   // Start "moving" the worm
 	next_step(map, 2, 6, 5, 0);
-	for(i = 0; i < size; i++) {
-		for(j = 0; j < size; j++)
-			printf("%c ", map[i][j].edges+70);
-		printf("\n");
-	}
+	// for(i = 0; i < size; i++) {
+	// 	for(j = 0; j < size; j++)
+	// 		printf("%c ", map[i][j].edges+70);
+	// 	printf("\n");
+	// }
+	create_svg(map);
 }
