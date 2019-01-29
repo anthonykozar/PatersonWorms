@@ -36,14 +36,20 @@ typedef struct {
 	char edges;
 } point;
 
-void move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
+int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
   if(DEBUG) {
     printf("move_to(%d, %d, %d, %d, %d)\n", c_x, c_y, x, y, to_dir);
-  };
-  
-  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
-  map[c_x][c_y].edges |= 1 << (to_dir % 6);
-  
+  }
+  if(x >= 0 && x < size && y >= 0 && y < size) {
+	  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
+	  map[c_x][c_y].edges |= 1 << (to_dir % 6);
+	  return 1;
+  }
+
+  if(DEBUG) {
+  	printf("The worm attempted to travel out of bounds and was killed.\n");
+  }
+  return 0;
 }
 
 int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
@@ -148,15 +154,16 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     new_dir = (new_dir+count) % 6;
     x += DIR_MATRIX[new_dir][0];
     y += DIR_MATRIX[new_dir][1];
-   
-    //TODO: Check to make sure movement doesn't take you out of bounds
-    //That would really fuck shit up
 
-    move_to(map, c_x, c_y, x, y, new_dir, step);
-    retval[0] = x;
-    retval[1] = y;
-    retval[2] = new_dir;
-    return 1;
+    if(move_to(map, c_x, c_y, x, y, new_dir, step))
+    {
+	    retval[0] = x;
+	    retval[1] = y;
+	    retval[2] = new_dir;
+	    return 1;
+  	}
+  	else
+  		return 0;
   }
   return 0;
 }
