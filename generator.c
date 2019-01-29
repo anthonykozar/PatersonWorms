@@ -44,16 +44,6 @@ void move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) 
   map[x][y].edges |= 1 << ((to_dir + 3) % 6);
   map[c_x][c_y].edges |= 1 << (to_dir % 6);
   
-  //TODO: Remove these calculations since I am just doing it all at the end
-
-  double x1 = snap_center_x;
-  double x2 = snap_center_x - line_length*cos(((to_dir + 3) % 6)*M_PI/3);
-  double y1 = snap_center_y;
-  double y2 = snap_center_y - line_length*sin(((to_dir + 3) % 6)*M_PI/3);
-
-  snap_center_x = x2;
-  snap_center_y = y2;
-
 }
 
 int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
