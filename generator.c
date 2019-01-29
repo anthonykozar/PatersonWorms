@@ -26,6 +26,7 @@ int choice4_f[2] = {0, 1};
 int retval[3] = {0, 0, 0};
 int size = 10;
 
+int start;
 
 double snap_center_x;
 double snap_center_y;
@@ -232,15 +233,19 @@ void map_to_svg(point ** map) {
 					//might want to do a bounds check here too.
 					double p_y, p_ny;
 					int p_x, p_nx;
-					//If n_y is odd
-					int n_x = i+DIR_MATRIX[t][0];
-					int n_y = j+DIR_MATRIX[t][1];
-					p_y = -5*sqrt(3)*j;
+
+					//Subtracting by start centers the image (assuming starting x and y are the same)
+					int adj_i = i - start;
+					int adj_j = j - start;
+					int n_x = adj_i+DIR_MATRIX[t][0];
+					int n_y = adj_j+DIR_MATRIX[t][1];
+
+					p_y = -5*sqrt(3)*adj_j;
 					p_ny = -5*sqrt(3)*n_y;
-					p_x = 10*i + 5*j;
+					p_x = 10*adj_i + 5*adj_j;
 					p_nx = 10*n_x + 5*n_y;
 					map[i][j].edges &= ~(1 << t);
-					map[n_x][n_y].edges &= ~(1 << ((t+3) % 6));
+					map[i+DIR_MATRIX[t][0]][j+DIR_MATRIX[t][1]].edges &= ~(1 << ((t+3) % 6));
 					printf("<line x1=\"%d\" x2=\"%d\" y1=\"%.3f\" y2=\"%.3f\" stroke=\"#fd0000\" style=\"stroke-width: 2; stroke-linecap: round;\">", p_x, p_nx, p_y, p_ny);
 					printf("</line><!--(%d, %d) to (%d, %d)-->\n", i, j, n_x, n_y);
 				}
@@ -261,10 +266,12 @@ int main() {
 	point** map = init_graph(size);
 	int i,j;
 
+	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
+	start = size/2;
 	//printf("Total size: %d bytes\n", 8+size*8+size*size);
-  move_to(map, 5, 5, 6, 5, 0, 1);
+  move_to(map, start, start, start+1, start, 0, 1);
   // Start "moving" the worm
-	next_step(map, 2, 6, 5, 0);
+	next_step(map, 2, start+1, start, 0);
 	// for(i = 0; i < size; i++) {
 	// 	for(j = 0; j < size; j++)
 	// 		printf("%c ", map[i][j].edges+70);
