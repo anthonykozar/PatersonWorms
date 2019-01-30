@@ -27,6 +27,11 @@ int retval[3] = {0, 0, 0};
 int size = 10000;
 
 int start;
+int min_x;
+int min_y;
+int max_x;
+int max_y;
+
 
 typedef struct {
 	char edges;
@@ -39,6 +44,14 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
   if(x >= 0 && x < size && y >= 0 && y < size) {
 	  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
 	  map[c_x][c_y].edges |= 1 << (to_dir % 6);
+	  if(y > max_y)
+	  	max_y = y;
+	  if(y < min_y)
+	  	min_y = y;	  
+	  if(x > max_x)
+	  	max_x = x;
+	  if(x < min_x)
+	  	min_x = x;
 	  return 1;
   }
 
