@@ -13,7 +13,7 @@
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
+int field_array[7] = {0, 1, 2, 1, 0, 2, 1};
 int choice1_f[2] = {3, 4};
 int choice2_f[4] = {0,1,2,3};
 int choice3t_f[3] = {0,1,2};
@@ -24,13 +24,9 @@ int choice3b4_f[3] = {0, 1, 2};
 int choice4_f[2] = {0, 1};
 
 int retval[3] = {0, 0, 0};
-int size = 10;
+int size = 10000;
 
 int start;
-
-double snap_center_x;
-double snap_center_y;
-double line_length;
 
 typedef struct {
 	char edges;
@@ -252,7 +248,7 @@ void map_to_svg(point ** map) {
 }
 
 void create_svg(point ** map) {
-	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", -20*size/2, -20*size/2, 20*size, 20*size);
+	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", -size/8, -size/8, size/4, size/4);
 	printf("\t<g>\n");
 	map_to_svg(map);
 	printf("\t</g>\n");
