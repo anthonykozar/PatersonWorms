@@ -38,23 +38,35 @@ typedef struct {
 	char edges;
 } point;
 
-int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
+/* Updates minimum and maximum x and y reached by the worm.
+ * These maxes and mins are used when determining the size of the svg canvas.
+*/
+void update_minmax(int x, int y) {
+  if(y > max_y)
+    max_y = y;
+  if(y < min_y)
+    min_y = y;    
+  if(x > max_x)
+    max_x = x;
+  if(x < min_x)
+    min_x = x;
+}
+
+/* Moves the worm from position (c_x, c_y) to (x, y) along direction dir
+ * if (x, y) is within the bounds of the array. The edge being traveled down from
+ * (c_x, c_y) is set to 1 and the opposite edge connected to (x, y) is set to 1 (eaten).
+ * This is unfortunate redundancy for memory but makes computation easier.
+*/
+
+int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir) {
   if(DEBUG) {
     printf("move_to(%d, %d, %d, %d, %d)\n", c_x, c_y, x, y, to_dir);
   }
 
-
   if(x >= 0 && x < size && y >= 0 && y < size) {
 	  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
 	  map[c_x][c_y].edges |= 1 << (to_dir % 6);
-	  if(y > max_y)
-	  	max_y = y;
-	  if(y < min_y)
-	  	min_y = y;	  
-	  if(x > max_x)
-	  	max_x = x;
-	  if(x < min_x)
-	  	min_x = x;
+    update_minmax(x, y);
 	  return 1;
   }
 
@@ -196,7 +208,7 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     x += DIR_MATRIX[new_dir][0];
     y += DIR_MATRIX[new_dir][1];
 
-    if(move_to(map, c_x, c_y, x, y, new_dir, step))
+    if(move_to(map, c_x, c_y, x, y, new_dir))
     {
 
 	    retval[0] = x;
@@ -296,16 +308,6 @@ void map_to_svg(point ** map) {
 }
 
 void create_svg(point ** map) {
-	// int adj_i = i - start;
-	// int adj_j = j - start;
-	// int n_x = adj_i+DIR_MATRIX[t][0];
-	// int n_y = adj_j+DIR_MATRIX[t][1];
-	// p_y = -5*sqrt(3)*adj_j;
-	// p_ny = -5*sqrt(3)*n_y;
-	// p_x = 10*adj_i + 5*adj_j;
-	// p_nx = 10*n_x + 5*n_y;
-	//min x is when x is 0 -> adj_i = 0-start=-start
-	//min p_x is when adj_i = -start and adj_j=-start
 	printf("<!--(%d, %d, %d, %d)-->\n", min_x, max_x, min_y, max_y);
 	int min_px = 10*(min_x-start) - 5*(max_y-start);
 	int max_px = 10*(max_x-start) + 5*(max_y-start);
@@ -329,7 +331,7 @@ int main() {
 	max_x = start;
 	max_y = start;
 	//printf("Total size: %d bytes\n", 8+size*8+size*size);
-  move_to(map, start, start, start+1, start, 0, 1);
+  move_to(map, start, start, start+1, start, 0);
   // Start "moving" the worm
 	int step = 1;
   retval[0] = start+1;
@@ -341,11 +343,5 @@ int main() {
     if(term == 0)
       break;
   }
-
-	// for(i = 0; i < size; i++) {
-	// 	for(j = 0; j < size; j++)
-	// 		printf("%c ", map[i][j].edges+70);
-	// 	printf("\n");
-	// }
 	create_svg(map);
 }
