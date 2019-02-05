@@ -13,7 +13,8 @@
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-int field_array[7] = {0, 1, 2, 1, 0, 2, 0};
+int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
+
 int choice1_f[2] = {3, 4};
 int choice2_f[4] = {0,1,2,3};
 int choice3t_f[3] = {0,1,2};
@@ -24,7 +25,7 @@ int choice3b4_f[3] = {0, 1, 2};
 int choice4_f[2] = {0, 1};
 
 int retval[3] = {0, 0, 0};
-int size = 1000;
+int size = 10;
 
 int start;
 int min_x;
@@ -63,6 +64,25 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
   return 0;
 }
 
+/* Checks to see if the direction dir has already been traveled down from
+*  the point that c_edges belongs to.
+*/
+int path_eaten(char c_edges, int dir) {
+  return c_edges & (1 << (dir % 6));
+}
+
+/* Returns the number of paths that have already been traveled down from
+ * the point that c_edges belongs to.
+ */
+int get_number_eaten_paths(char c_edges) {
+  int i;
+  int eaten = 0;
+  for(i = 0; i < 6; i++) {
+    eaten += (c_edges & (1 << i)) && 1;
+  }
+  return eaten;
+}
+
 int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   if(DEBUG) {
     printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
@@ -79,9 +99,7 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   int x = c_x;
   int y = c_y;
   int new_dir = (c_dir + 3) % 6;
-  int eaten = 0;
-  int i;
-  for(i = 0; i < 6; i++){eaten += (c_edges & (1 << i)) >> i;}
+  int eaten = get_number_eaten_paths(c_edges);
 
   int choice = 1;
   //Determine the correct field of choice
@@ -91,56 +109,56 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     choice += choice2_f[field_array[1]];
   else if(eaten == 3) {
     //check orientation of the true (eaten) paths
-    if(c_edges & (1 << ((new_dir + 1) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
+    if(path_eaten(c_edges, new_dir + 1) && path_eaten(c_edges, new_dir + 2))
     {
       choice += choice3t_f[field_array[2]];
       if(DEBUG){
         printf("choice3t_f[field_array[2]]: %d\n", choice3t_f[field_array[2]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 1) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
+    else if(path_eaten(c_edges, new_dir + 1) && path_eaten(c_edges, new_dir + 3))
     {
       choice += choice3b1_f[field_array[2]];
       if(DEBUG){
         printf("choice3b1_f[field_array[2]]: %d\n", choice3b1_f[field_array[2]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 3) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
+    else if(path_eaten(c_edges, new_dir + 3) && path_eaten(c_edges, new_dir + 2))
     {
       choice += choice3t_f[field_array[3]];
       if(DEBUG){
         printf("choice3t_f[field_array[3]]: %d\n", choice3t_f[field_array[3]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 1) % 6)))
+    else if(path_eaten(c_edges, new_dir + 5) && path_eaten(c_edges, new_dir + 1))    
     {
       choice += choice3b2_f[field_array[3]];
       if(DEBUG){
         printf("choice3b2_f[field_array[3]]: %d\n", choice3b2_f[field_array[3]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 4) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
+    else if(path_eaten(c_edges, new_dir + 4) && path_eaten(c_edges, new_dir + 3))
     {
       choice += choice3t_f[field_array[4]];
       if(DEBUG){
         printf("choice3t_f[field_array[4]]: %d\n", choice3t_f[field_array[4]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 4) % 6)) && c_edges & (1 << ((new_dir + 2) % 6)))
+    else if(path_eaten(c_edges, new_dir + 4) && path_eaten(c_edges, new_dir + 2))
     {
       choice += choice3b3_f[field_array[4]];
       if(DEBUG){
         printf("choice3b3_f[field_array[4]]: %d\n", choice3b3_f[field_array[4]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 4) % 6)))
+    else if(path_eaten(c_edges, new_dir + 5) && path_eaten(c_edges, new_dir + 4))
     {
       choice += choice3t_f[field_array[5]];
       if(DEBUG){
         printf("choice3t_f[field_array[5]]: %d\n", choice3t_f[field_array[5]]);
       }
     }
-    else if(c_edges & (1 << ((new_dir + 5) % 6)) && c_edges & (1 << ((new_dir + 3) % 6)))
+    else if(path_eaten(c_edges, new_dir + 1) && path_eaten(c_edges, new_dir + 3))
     {
       choice += choice3b4_f[field_array[5]];
       if(DEBUG){
