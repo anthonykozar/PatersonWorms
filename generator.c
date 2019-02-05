@@ -83,6 +83,86 @@ int get_number_eaten_paths(char c_edges) {
   return eaten;
 }
 
+/* Determines how many paths need to be passed before selecting the one the worm will travel down.
+ * Why is this method so ugly? Well, Gardner's notation is unfortunately difficult to generalize
+ * and requires specific cases. The field_array is an array containing the actual values of the
+ * radio buttons, but these need to be converted into the number of paths to skip.
+ * tl;dr I didn't make the notation but I need to maintain consistency to check correctness.
+ */
+int get_number_paths_to_pass(char edges, int dir, int eaten) {
+  int choice = 1;
+  if(eaten == 1)
+    choice += choice1_f[field_array[0]];
+  else if(eaten == 2)
+    choice += choice2_f[field_array[1]];
+  else if(eaten == 3) {
+    //check orientation of the true (eaten) paths
+    if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 2))
+    {
+      choice += choice3t_f[field_array[2]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[2]]: %d\n", choice3t_f[field_array[2]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 3))
+    {
+      choice += choice3b1_f[field_array[2]];
+      if(DEBUG){
+        printf("choice3b1_f[field_array[2]]: %d\n", choice3b1_f[field_array[2]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 3) && path_eaten(edges, dir + 2))
+    {
+      choice += choice3t_f[field_array[3]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[3]]: %d\n", choice3t_f[field_array[3]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 5) && path_eaten(edges, dir + 1))    
+    {
+      choice += choice3b2_f[field_array[3]];
+      if(DEBUG){
+        printf("choice3b2_f[field_array[3]]: %d\n", choice3b2_f[field_array[3]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 4) && path_eaten(edges, dir + 3))
+    {
+      choice += choice3t_f[field_array[4]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[4]]: %d\n", choice3t_f[field_array[4]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 4) && path_eaten(edges, dir + 2))
+    {
+      choice += choice3b3_f[field_array[4]];
+      if(DEBUG){
+        printf("choice3b3_f[field_array[4]]: %d\n", choice3b3_f[field_array[4]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 5) && path_eaten(edges, dir + 4))
+    {
+      choice += choice3t_f[field_array[5]];
+      if(DEBUG){
+        printf("choice3t_f[field_array[5]]: %d\n", choice3t_f[field_array[5]]);
+      }
+    }
+    else if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 3))
+    {
+      choice += choice3b4_f[field_array[5]];
+      if(DEBUG){
+        printf("choice3b4_f[field_array[5]]: %d\n", choice3b4_f[field_array[5]]);
+      }
+    }
+    else {
+      choice = 0;
+      printf("UNEXPECTED CHOICE");
+    }
+  }
+  else if(eaten == 4)
+    choice += choice4_f[field_array[6]];
+  return choice;
+}
+
 int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   if(DEBUG) {
     printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
@@ -101,78 +181,7 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   int new_dir = (c_dir + 3) % 6;
   int eaten = get_number_eaten_paths(c_edges);
 
-  int choice = 1;
-  //Determine the correct field of choice
-  if(eaten == 1)
-    choice += choice1_f[field_array[0]];
-  else if(eaten == 2)
-    choice += choice2_f[field_array[1]];
-  else if(eaten == 3) {
-    //check orientation of the true (eaten) paths
-    if(path_eaten(c_edges, new_dir + 1) && path_eaten(c_edges, new_dir + 2))
-    {
-      choice += choice3t_f[field_array[2]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[2]]: %d\n", choice3t_f[field_array[2]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 1) && path_eaten(c_edges, new_dir + 3))
-    {
-      choice += choice3b1_f[field_array[2]];
-      if(DEBUG){
-        printf("choice3b1_f[field_array[2]]: %d\n", choice3b1_f[field_array[2]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 3) && path_eaten(c_edges, new_dir + 2))
-    {
-      choice += choice3t_f[field_array[3]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[3]]: %d\n", choice3t_f[field_array[3]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 5) && path_eaten(c_edges, new_dir + 1))    
-    {
-      choice += choice3b2_f[field_array[3]];
-      if(DEBUG){
-        printf("choice3b2_f[field_array[3]]: %d\n", choice3b2_f[field_array[3]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 4) && path_eaten(c_edges, new_dir + 3))
-    {
-      choice += choice3t_f[field_array[4]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[4]]: %d\n", choice3t_f[field_array[4]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 4) && path_eaten(c_edges, new_dir + 2))
-    {
-      choice += choice3b3_f[field_array[4]];
-      if(DEBUG){
-        printf("choice3b3_f[field_array[4]]: %d\n", choice3b3_f[field_array[4]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 5) && path_eaten(c_edges, new_dir + 4))
-    {
-      choice += choice3t_f[field_array[5]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[5]]: %d\n", choice3t_f[field_array[5]]);
-      }
-    }
-    else if(path_eaten(c_edges, new_dir + 1) && path_eaten(c_edges, new_dir + 3))
-    {
-      choice += choice3b4_f[field_array[5]];
-      if(DEBUG){
-        printf("choice3b4_f[field_array[5]]: %d\n", choice3b4_f[field_array[5]]);
-      }
-    }
-    else {
-      choice = 0;
-      printf("UNEXPECTED CHOICE");
-    }
-  }
-  else if(eaten == 4)
-    choice += choice4_f[field_array[6]];
-  
+  int choice = get_number_paths_to_pass(c_edges, new_dir, eaten);  
   
   int count = 0;
   while(choice != 0 && count != 5) {
