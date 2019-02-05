@@ -67,27 +67,30 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
 /* Checks to see if the direction dir has already been traveled down from
 *  the point that c_edges belongs to.
 */
-int path_eaten(char c_edges, int dir) {
-  return c_edges & (1 << (dir % 6));
+int path_eaten(char edges, int dir) {
+  return edges & (1 << (dir % 6));
 }
 
 /* Returns the number of paths that have already been traveled down from
  * the point that c_edges belongs to.
  */
-int get_number_eaten_paths(char c_edges) {
+int get_number_eaten_paths(char edges) {
   int i;
   int eaten = 0;
   for(i = 0; i < 6; i++) {
-    eaten += (c_edges & (1 << i)) && 1;
+    eaten += (edges & (1 << i)) && 1;
   }
   return eaten;
 }
 
-/* Determines how many paths need to be passed before selecting the one the worm will travel down.
+/* Determines how many uneaten paths need to be passed before selecting the one the worm will travel down.
  * Why is this method so ugly? Well, Gardner's notation is unfortunately difficult to generalize
  * and requires specific cases. The field_array is an array containing the actual values of the
  * radio buttons, but these need to be converted into the number of paths to skip.
  * tl;dr I didn't make the notation but I need to maintain consistency to check correctness.
+ *
+ * There's probably some way to reduce the repetition of the code using more arrays and indexing,
+ * but I would rather keep it readable than short.
  */
 int get_number_paths_to_pass(char edges, int dir, int eaten) {
   int choice = 1;
@@ -186,7 +189,7 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   int count = 0;
   while(choice != 0 && count != 5) {
     count += 1;
-    choice -= !(c_edges & (1 << ((new_dir+count) % 6)));
+    choice -= !path_eaten(c_edges, new_dir + count);
   }
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
