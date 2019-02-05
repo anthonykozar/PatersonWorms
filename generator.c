@@ -13,7 +13,7 @@
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-int field_array[7] = {0, 1, 2, 1, 0, 2, 1};
+int field_array[7] = {0, 1, 2, 1, 0, 2, 0};
 int choice1_f[2] = {3, 4};
 int choice2_f[4] = {0,1,2,3};
 int choice3t_f[3] = {0,1,2};
@@ -24,7 +24,7 @@ int choice3b4_f[3] = {0, 1, 2};
 int choice4_f[2] = {0, 1};
 
 int retval[3] = {0, 0, 0};
-int size = 10000;
+int size = 1000;
 
 int start;
 int min_x;
@@ -41,6 +41,8 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir, int step) {
   if(DEBUG) {
     printf("move_to(%d, %d, %d, %d, %d)\n", c_x, c_y, x, y, to_dir);
   }
+
+
   if(x >= 0 && x < size && y >= 0 && y < size) {
 	  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
 	  map[c_x][c_y].edges |= 1 << (to_dir % 6);
@@ -166,6 +168,7 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
 
     if(move_to(map, c_x, c_y, x, y, new_dir, step))
     {
+
 	    retval[0] = x;
 	    retval[1] = y;
 	    retval[2] = new_dir;
@@ -177,11 +180,11 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   return 0;
 }
 
-void next_step(point** map, int step, int cx, int cy, int cd){  
+int next_step(point** map, int step, int cx, int cy, int cd){  
     int term = determine_move(map, cx, cy, cd, step);
     if(term == 0)
-      return;
-    next_step(map, step+1, retval[0], retval[1], retval[2]);
+      return 0;
+    return 1;
 }
 
 point** init_graph(int size) {
@@ -189,7 +192,7 @@ point** init_graph(int size) {
 	int i,j;
 	for(i = 0; i < size; i++)
 		map[i] = (point *) calloc(1, sizeof(point)*size);
-	return map;
+  return map;
 }
 
 void map_to_svg(point ** map) {
@@ -252,8 +255,10 @@ void map_to_svg(point ** map) {
 					p_nx = 10*n_x + 5*n_y;
 					map[i][j].edges &= ~(1 << t);
 					map[i+DIR_MATRIX[t][0]][j+DIR_MATRIX[t][1]].edges &= ~(1 << ((t+3) % 6));
-					printf("<line x1=\"%d\" x2=\"%d\" y1=\"%.3f\" y2=\"%.3f\" stroke=\"#fd0000\" style=\"stroke-width: 2; stroke-linecap: round;\">", p_x, p_nx, p_y, p_ny);
-					printf("</line><!--(%d, %d) to (%d, %d)-->\n", i, j, n_x, n_y);
+
+					//This should probably be changed to make it output a path as it goes on in order to reduce the amount of memory
+					printf("<line x1=\"%d\" x2=\"%d\" y1=\"%.3f\" y2=\"%.3f\" stroke=\"#000000\" style=\"stroke-width: 2; stroke-linecap: round;\">", p_x, p_nx, p_y, p_ny);
+					printf("</line>");//<!--(%d, %d) to (%d, %d)-->\n", i, j, i+DIR_MATRIX[t][0], j+DIR_MATRIX[t][1]);
 				}
 			}
 		}
@@ -261,7 +266,22 @@ void map_to_svg(point ** map) {
 }
 
 void create_svg(point ** map) {
-	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", -size/8, -size/8, size/4, size/4);
+	// int adj_i = i - start;
+	// int adj_j = j - start;
+	// int n_x = adj_i+DIR_MATRIX[t][0];
+	// int n_y = adj_j+DIR_MATRIX[t][1];
+	// p_y = -5*sqrt(3)*adj_j;
+	// p_ny = -5*sqrt(3)*n_y;
+	// p_x = 10*adj_i + 5*adj_j;
+	// p_nx = 10*n_x + 5*n_y;
+	//min x is when x is 0 -> adj_i = 0-start=-start
+	//min p_x is when adj_i = -start and adj_j=-start
+	printf("<!--(%d, %d, %d, %d)-->\n", min_x, max_x, min_y, max_y);
+	int min_px = 10*(min_x-start) - 5*(max_y-start);
+	int max_px = 10*(max_x-start) + 5*(max_y-start);
+	int min_py = -5*sqrt(3)*(max_y - start);
+	int max_py = -5*sqrt(3)*(min_y - start);
+	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_px, min_py, max_px-min_px, max_py-min_py);
 	printf("\t<g>\n");
 	map_to_svg(map);
 	printf("\t</g>\n");
@@ -274,10 +294,24 @@ int main() {
 
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
 	start = size/2;
+	min_x = start;
+	min_y = start;
+	max_x = start;
+	max_y = start;
 	//printf("Total size: %d bytes\n", 8+size*8+size*size);
   move_to(map, start, start, start+1, start, 0, 1);
   // Start "moving" the worm
-	next_step(map, 2, start+1, start, 0);
+	int step = 1;
+  retval[0] = start+1;
+  retval[1] = start;
+  retval[2] = 0;
+  while(1){
+    step += 1;
+    int term = next_step(map, step, retval[0], retval[1], retval[2]);
+    if(term == 0)
+      break;
+  }
+
 	// for(i = 0; i < size; i++) {
 	// 	for(j = 0; j < size; j++)
 	// 		printf("%c ", map[i][j].edges+70);
