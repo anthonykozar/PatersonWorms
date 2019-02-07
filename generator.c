@@ -231,11 +231,6 @@ bool determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   return false;
 }
 
-bool next_step(point** map, int step, int cx, int cy, int cd){  
-    bool success = determine_move(map, cx, cy, cd, step);
-    return success;
-}
-
 point** init_graph(int size) {
 	point** map = (point **) calloc(1, sizeof(point *)*size);
 	int i,j;
@@ -346,7 +341,7 @@ int main() {
   retval[2] = 0;
   while(1){
     step += 1;
-    bool success = next_step(map, step, retval[0], retval[1], retval[2]);
+    bool success = determine_move(map, retval[0], retval[1], retval[2], step);
     if(!success)
       break;
   }
