@@ -16,7 +16,6 @@ int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
 int translated_field_array[11];
 
-int retval[3] = {0, 0, 0};
 int size = 10;
 
 int start;
@@ -162,7 +161,10 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
  *
  *
  */
-bool determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
+bool determine_move(point** map, int* retval, int step) {
+  int c_x = retval[0];
+  int c_y = retval[1];
+  int c_dir = retval[2];
   if(DEBUG) {
     printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
   }
@@ -175,7 +177,6 @@ bool determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   }
   //check in order of preference
   char c_edges = map[c_x][c_y].edges;
-
   int x = c_x;
   int y = c_y;
   int new_dir = (c_dir + 3) % 6;
@@ -312,12 +313,11 @@ int main() {
   move_to(map, start, start, start+1, start, 0);
   // Start "moving" the worm
 	int step = 1;
-  retval[0] = start+1;
-  retval[1] = start;
-  retval[2] = 0;
+  int retval[3] = {start+1, start, 0};
+
   while(1){
     step += 1;
-    bool success = determine_move(map, retval[0], retval[1], retval[2], step);
+    bool success = determine_move(map, retval, step);
     if(!success)
       break;
   }
