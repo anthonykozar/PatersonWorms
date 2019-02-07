@@ -164,22 +164,19 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
  * the worms new x coord, y coord, and direction. Otherwise returns false.
  */
 bool determine_move(point** map, int* retval, int step) {
-  int c_x = retval[0];
-  int c_y = retval[1];
-  int c_dir = retval[2];
-
   if(DEBUG) {
-    printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
-  }
-  if(DEBUG) {
-  	int w;
-  	printf("c_edges: ");
-  	for(w = 0; w < 6; w++)
-    	printf("%d ", 0 || map[c_x][c_y].edges & (1 << w));
+    printf("determineMove(map, [%d, %d, %d], %d)\n", retval[0], retval[1], retval[2], step);
+    printf("c_edges: ");
+    for(int w = 0; w < 6; w++)
+      printf("%d ", 0 || map[c_x][c_y].edges & (1 << w));
     printf("\n");
   }
 
   char c_edges = map[c_x][c_y].edges;
+  int c_x = retval[0];
+  int c_y = retval[1];
+  int c_dir = retval[2];
+
   int new_dir = (c_dir + 3) % 6;
   int eaten = get_number_eaten_paths(c_edges);
   int choice = get_number_paths_to_pass(c_edges, new_dir, eaten);  
@@ -189,6 +186,8 @@ bool determine_move(point** map, int* retval, int step) {
     count += 1;
     choice -= !path_eaten(c_edges, new_dir + count);
   }
+
+  //If choice is not 0, we have cycled through all the paths but could not find one to go down.
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
     int x = c_x + DIR_MATRIX[new_dir][0];
@@ -199,6 +198,7 @@ bool determine_move(point** map, int* retval, int step) {
 	    retval[0] = x;
 	    retval[1] = y;
 	    retval[2] = new_dir;
+
 	    return true;
   	}
   	else
