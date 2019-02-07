@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
@@ -34,13 +35,16 @@ int max_x;
 int max_y;
 
 
+/* Point structs are created in case more data ever wants to be added to a point.
+ * This could be useful for keeping track of coloring, numbering, etc.
+ */
 typedef struct {
 	char edges;
 } point;
 
 /* Updates minimum and maximum x and y reached by the worm.
  * These maxes and mins are used when determining the size of the svg canvas.
-*/
+ */
 void update_minmax(int x, int y) {
   if(y > max_y)
     max_y = y;
@@ -56,9 +60,10 @@ void update_minmax(int x, int y) {
  * if (x, y) is within the bounds of the array. The edge being traveled down from
  * (c_x, c_y) is set to 1 and the opposite edge connected to (x, y) is set to 1 (eaten).
  * This is unfortunate redundancy for memory but makes computation easier.
-*/
-
-int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir) {
+ *
+ * Returns true if the worm is moved successfully and false if the worm cannot be moved to (x, y).
+ */
+bool move_to(point** map, int c_x, int c_y, int x, int y, int to_dir) {
   if(DEBUG) {
     printf("move_to(%d, %d, %d, %d, %d)\n", c_x, c_y, x, y, to_dir);
   }
@@ -67,19 +72,19 @@ int move_to(point** map, int c_x, int c_y, int x, int y, int to_dir) {
 	  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
 	  map[c_x][c_y].edges |= 1 << (to_dir % 6);
     update_minmax(x, y);
-	  return 1;
+	  return true;
   }
 
   if(DEBUG) {
   	printf("The worm attempted to travel out of bounds and was killed.\n");
   }
-  return 0;
+  return false;
 }
 
 /* Checks to see if the direction dir has already been traveled down from
 *  the point that c_edges belongs to.
 */
-int path_eaten(char edges, int dir) {
+bool path_eaten(char edges, int dir) {
   return edges & (1 << (dir % 6));
 }
 
@@ -178,6 +183,11 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
   return choice;
 }
 
+
+/*
+ *
+ *
+ */
 int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   if(DEBUG) {
     printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
@@ -195,7 +205,6 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   int y = c_y;
   int new_dir = (c_dir + 3) % 6;
   int eaten = get_number_eaten_paths(c_edges);
-
   int choice = get_number_paths_to_pass(c_edges, new_dir, eaten);  
   
   int count = 0;
@@ -210,7 +219,6 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
 
     if(move_to(map, c_x, c_y, x, y, new_dir))
     {
-
 	    retval[0] = x;
 	    retval[1] = y;
 	    retval[2] = new_dir;
