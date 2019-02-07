@@ -168,14 +168,14 @@ bool determine_move(point** map, int* retval, int step) {
     printf("determineMove(map, [%d, %d, %d], %d)\n", retval[0], retval[1], retval[2], step);
     printf("c_edges: ");
     for(int w = 0; w < 6; w++)
-      printf("%d ", 0 || map[c_x][c_y].edges & (1 << w));
+      printf("%d ", 0 || map[retval[0]][retval[1]].edges & (1 << w));
     printf("\n");
   }
 
-  char c_edges = map[c_x][c_y].edges;
   int c_x = retval[0];
   int c_y = retval[1];
   int c_dir = retval[2];
+  char c_edges = map[c_x][c_y].edges;
 
   int new_dir = (c_dir + 3) % 6;
   int eaten = get_number_eaten_paths(c_edges);
@@ -208,6 +208,14 @@ bool determine_move(point** map, int* retval, int step) {
     return false;
 }
 
+
+/* Creates an empty map for the worm to move around.
+ * The use of calloc is due to the fact that we want all the paths to initially be zero.
+ * We need to allocate the point** to include enough space for size point pointers.
+ * We need to allocate the point* to include enough space for size points.
+ * The point pointer pointers correspond to x coordinates. The point pointers correspond to y coordinates.
+ * Returns a 2d array of points all initialized to have their edges set to 0.
+ */
 point** init_graph(int size) {
 	point** map = (point **) calloc(1, sizeof(point *)*size);
 	int i,j;
