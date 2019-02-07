@@ -157,14 +157,17 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
 }
 
 
-/*
- *
- *
+/* Determines the worms next move, and if possible, executes it.
+ * This is done by first finding how many paths have been eaten, and then finding the number of
+ * paths to pass based on the result and the initial input for the worm's decisions.
+ * Returns true if the worm was successfully moved. The array retval is also updated to reflect
+ * the worms new x coord, y coord, and direction. Otherwise returns false.
  */
 bool determine_move(point** map, int* retval, int step) {
   int c_x = retval[0];
   int c_y = retval[1];
   int c_dir = retval[2];
+
   if(DEBUG) {
     printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
   }
@@ -175,10 +178,8 @@ bool determine_move(point** map, int* retval, int step) {
     	printf("%d ", 0 || map[c_x][c_y].edges & (1 << w));
     printf("\n");
   }
-  //check in order of preference
+
   char c_edges = map[c_x][c_y].edges;
-  int x = c_x;
-  int y = c_y;
   int new_dir = (c_dir + 3) % 6;
   int eaten = get_number_eaten_paths(c_edges);
   int choice = get_number_paths_to_pass(c_edges, new_dir, eaten);  
@@ -190,8 +191,8 @@ bool determine_move(point** map, int* retval, int step) {
   }
   if(choice == 0) {
     new_dir = (new_dir+count) % 6;
-    x += DIR_MATRIX[new_dir][0];
-    y += DIR_MATRIX[new_dir][1];
+    int x = c_x + DIR_MATRIX[new_dir][0];
+    int y = c_y + DIR_MATRIX[new_dir][1];
 
     if(move_to(map, c_x, c_y, x, y, new_dir))
     {
@@ -203,7 +204,8 @@ bool determine_move(point** map, int* retval, int step) {
   	else
   		return false;
   }
-  return false;
+  else
+    return false;
 }
 
 point** init_graph(int size) {
@@ -309,7 +311,8 @@ int main() {
 	min_y = start;
 	max_x = start;
 	max_y = start;
-	//printf("Total size: %d bytes\n", 8+size*8+size*size);
+
+  //Should probably check this before continuing.
   move_to(map, start, start, start+1, start, 0);
   // Start "moving" the worm
 	int step = 1;
