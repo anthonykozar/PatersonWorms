@@ -14,16 +14,7 @@
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
-
-int choice1_f[2] = {3, 4};
-int choice2_f[4] = {0,1,2,3};
-int choice3t_f[3] = {0,1,2};
-int choice3b1_f[3] = {2,0,1};
-int choice3b2_f[3] = {1,0,2};
-int choice3b3_f[3] = {1,0,2};
-int choice3b4_f[3] = {0, 1, 2};
-int choice4_f[2] = {0, 1};
+int translated_field_array[11];
 
 int retval[3] = {0, 0, 0};
 int size = 10;
@@ -41,6 +32,29 @@ int max_y;
 typedef struct {
 	char edges;
 } point;
+
+/* Translates the initial input governing the worm's path decisions from Gardner's notation
+ * to an array covering all possibilities. This is done separately in order to avoid clutter 
+ * in other functions.
+ */
+void translate_field_array(int* field_array) {
+  int choice1_f[2] = {3, 4};
+  int choice2_f[4] = {0,1,2,3};
+  int choice3t_f[3] = {0,1,2};
+  int choice3b1_f[3] = {2,0,1};
+  int choice3b2_f[3] = {1,0,2};
+  int choice3b3_f[3] = {1,0,2};
+  int choice3b4_f[3] = {0, 1, 2};
+  int choice4_f[2] = {0, 1};
+
+  int temp_arr[11] = {choice1_f[field_array[0]], choice2_f[field_array[1]], choice3t_f[field_array[2]], 
+  choice3b1_f[field_array[2]], choice3t_f[field_array[3]], choice3b2_f[field_array[3]], choice3t_f[field_array[4]],
+  choice3b3_f[field_array[4]], choice3t_f[field_array[5]], choice3b4_f[field_array[5]], choice4_f[field_array[6]]};
+  
+  for(int i = 0; i < 11; i++) {
+    translated_field_array[i] = temp_arr[i];
+  }
+}
 
 /* Updates minimum and maximum x and y reached by the worm.
  * These maxes and mins are used when determining the size of the svg canvas.
@@ -112,74 +126,34 @@ int get_number_eaten_paths(char edges) {
 int get_number_paths_to_pass(char edges, int dir, int eaten) {
   int choice = 1;
   if(eaten == 1)
-    choice += choice1_f[field_array[0]];
+    choice += translated_field_array[0];
   else if(eaten == 2)
-    choice += choice2_f[field_array[1]];
+    choice += translated_field_array[1];
   else if(eaten == 3) {
     //check orientation of the true (eaten) paths
     if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 2))
-    {
-      choice += choice3t_f[field_array[2]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[2]]: %d\n", choice3t_f[field_array[2]]);
-      }
-    }
+      choice += translated_field_array[2];
     else if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 3))
-    {
-      choice += choice3b1_f[field_array[2]];
-      if(DEBUG){
-        printf("choice3b1_f[field_array[2]]: %d\n", choice3b1_f[field_array[2]]);
-      }
-    }
+      choice += translated_field_array[3];
     else if(path_eaten(edges, dir + 3) && path_eaten(edges, dir + 2))
-    {
-      choice += choice3t_f[field_array[3]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[3]]: %d\n", choice3t_f[field_array[3]]);
-      }
-    }
+      choice += translated_field_array[4];
     else if(path_eaten(edges, dir + 5) && path_eaten(edges, dir + 1))    
-    {
-      choice += choice3b2_f[field_array[3]];
-      if(DEBUG){
-        printf("choice3b2_f[field_array[3]]: %d\n", choice3b2_f[field_array[3]]);
-      }
-    }
+      choice += translated_field_array[5];
     else if(path_eaten(edges, dir + 4) && path_eaten(edges, dir + 3))
-    {
-      choice += choice3t_f[field_array[4]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[4]]: %d\n", choice3t_f[field_array[4]]);
-      }
-    }
+      choice += translated_field_array[6];
     else if(path_eaten(edges, dir + 4) && path_eaten(edges, dir + 2))
-    {
-      choice += choice3b3_f[field_array[4]];
-      if(DEBUG){
-        printf("choice3b3_f[field_array[4]]: %d\n", choice3b3_f[field_array[4]]);
-      }
-    }
+      choice += translated_field_array[7];
     else if(path_eaten(edges, dir + 5) && path_eaten(edges, dir + 4))
-    {
-      choice += choice3t_f[field_array[5]];
-      if(DEBUG){
-        printf("choice3t_f[field_array[5]]: %d\n", choice3t_f[field_array[5]]);
-      }
-    }
+      choice += translated_field_array[8];
     else if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 3))
-    {
-      choice += choice3b4_f[field_array[5]];
-      if(DEBUG){
-        printf("choice3b4_f[field_array[5]]: %d\n", choice3b4_f[field_array[5]]);
-      }
-    }
+      choice += translated_field_array[9];
     else {
       choice = 0;
       printf("UNEXPECTED CHOICE");
     }
   }
   else if(eaten == 4)
-    choice += choice4_f[field_array[6]];
+    choice += translated_field_array[10];
   return choice;
 }
 
@@ -325,7 +299,9 @@ void create_svg(point ** map) {
 int main() {
 	point** map = init_graph(size);
 	int i,j;
+  int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
 
+  translate_field_array(field_array);
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
 	start = size/2;
 	min_x = start;
