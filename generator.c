@@ -188,11 +188,10 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
  *
  *
  */
-int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
+bool determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
   if(DEBUG) {
     printf("determineMove(%d, %d, %d, %d)\n", c_x, c_y, c_dir, step);
   }
-  char c_edges = map[c_x][c_y].edges;
   if(DEBUG) {
   	int w;
   	printf("c_edges: ");
@@ -201,6 +200,8 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
     printf("\n");
   }
   //check in order of preference
+  char c_edges = map[c_x][c_y].edges;
+
   int x = c_x;
   int y = c_y;
   int new_dir = (c_dir + 3) % 6;
@@ -222,19 +223,17 @@ int determine_move(point** map, int c_x, int c_y, int c_dir, int step) {
 	    retval[0] = x;
 	    retval[1] = y;
 	    retval[2] = new_dir;
-	    return 1;
+	    return true;
   	}
   	else
-  		return 0;
+  		return false;
   }
-  return 0;
+  return false;
 }
 
-int next_step(point** map, int step, int cx, int cy, int cd){  
-    int term = determine_move(map, cx, cy, cd, step);
-    if(term == 0)
-      return 0;
-    return 1;
+bool next_step(point** map, int step, int cx, int cy, int cd){  
+    bool success = determine_move(map, cx, cy, cd, step);
+    return success;
 }
 
 point** init_graph(int size) {
@@ -347,8 +346,8 @@ int main() {
   retval[2] = 0;
   while(1){
     step += 1;
-    int term = next_step(map, step, retval[0], retval[1], retval[2]);
-    if(term == 0)
+    bool success = next_step(map, step, retval[0], retval[1], retval[2]);
+    if(!success)
       break;
   }
 	create_svg(map);
