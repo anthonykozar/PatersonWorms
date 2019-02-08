@@ -16,7 +16,7 @@ int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
 int translated_field_array[11];
 
-int size = 10;
+int size = 1000;
 
 int start;
 int min_x;
@@ -144,11 +144,12 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
       choice += translated_field_array[7];
     else if(path_eaten(edges, dir + 5) && path_eaten(edges, dir + 4))
       choice += translated_field_array[8];
-    else if(path_eaten(edges, dir + 1) && path_eaten(edges, dir + 3))
+    else if(path_eaten(edges, dir + 5) && path_eaten(edges, dir + 3))
       choice += translated_field_array[9];
     else {
       choice = 0;
       printf("UNEXPECTED CHOICE");
+      exit(1);
     }
   }
   else if(eaten == 4)
@@ -310,8 +311,7 @@ void create_svg(point ** map) {
 int main() {
 	point** map = init_graph(size);
 	int i,j;
-  int field_array[7] = {1, 2, 2, 1, 0, 2, 0};
-
+  int field_array[7] = {0, 1, 2, 1, 0, 2, 0};
   translate_field_array(field_array);
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
 	start = size/2;
