@@ -269,13 +269,13 @@ float* find_min_max(point ** map, int line_length) {
   float tmp_arr[4] = {FLT_MAX, -FLT_MAX, FLT_MAX, -FLT_MAX};
   memcpy(min_max, tmp_arr, 4*sizeof(float));
 
-  int i,j;
+  int i,j, adj_i, adj_j;
   float p_x, p_y;
   for (i = 0; i < size; i++) {
     for (j = 0; j < size; j++) {
       if(map[i][j].edges) {
-        int adj_j = j - start;
-        int adj_i = i -start;
+        adj_j = j - start;
+        adj_i = i -start;
         p_y = -5*sqrt(3)*adj_j;
         p_x = 10*adj_i + 5*adj_j;
         if(min_max[0] > p_x)
