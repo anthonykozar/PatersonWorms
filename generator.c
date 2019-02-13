@@ -11,18 +11,16 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+#include <float.h>
+#include <string.h>
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
 int translated_field_array[11];
 
-int size = 1000;
+int size = 100;
 
 int start;
-int min_x;
-int min_y;
-int max_x;
-int max_y;
 
 
 /* Point structs are created in case more data ever wants to be added to a point.
@@ -55,20 +53,6 @@ void translate_field_array(int* field_array) {
   }
 }
 
-/* Updates minimum and maximum x and y reached by the worm.
- * These maxes and mins are used when determining the size of the svg canvas.
- */
-void update_minmax(int x, int y) {
-  if(y > max_y)
-    max_y = y;
-  if(y < min_y)
-    min_y = y;    
-  if(x > max_x)
-    max_x = x;
-  if(x < min_x)
-    min_x = x;
-}
-
 /* Moves the worm from position (c_x, c_y) to (x, y) along direction dir
  * if (x, y) is within the bounds of the array. The edge being traveled down from
  * (c_x, c_y) is set to 1 and the opposite edge connected to (x, y) is set to 1 (eaten).
@@ -84,7 +68,6 @@ bool move_to(point** map, int c_x, int c_y, int x, int y, int to_dir) {
   if(x >= 0 && x < size && y >= 0 && y < size) {
 	  map[x][y].edges |= 1 << ((to_dir + 3) % 6);
 	  map[c_x][c_y].edges |= 1 << (to_dir % 6);
-    update_minmax(x, y);
 	  return true;
   }
 
@@ -268,6 +251,37 @@ void map_to_svg(point ** map) {
 	}
 }
 
+/* Finds the minimum and maximum x and y pixel values.
+ * This will iterate through the entire map, but losing a bit of performance to reduce storage
+ * is preferable in this situation since I have limited storage.
+ */
+float* find_min_max(point ** map, int line_length) {
+  float* min_max = malloc(4*sizeof(float));
+  float tmp_arr[4] = {FLT_MAX, -FLT_MAX, FLT_MAX, -FLT_MAX};
+  memcpy(min_max, tmp_arr, 4*sizeof(float));
+
+  int i,j;
+  float p_x, p_y;
+  for (i = 0; i < size; i++) {
+    for (j = 0; j < size; j++) {
+      if(map[i][j].edges) {
+        int adj_j = j - start;
+        int adj_i = i -start;
+        p_y = -5*sqrt(3)*adj_j;
+        p_x = 10*adj_i + 5*adj_j;
+        if(min_max[0] > p_x)
+          min_max[0] = p_x;
+        if(min_max[1] < p_x)
+          min_max[1] = p_x;
+        if(min_max[2] > p_y)
+          min_max[2] = p_y;
+        if(min_max[3] < p_y)
+          min_max[3] = p_y; 
+      }
+    }
+  }
+  return min_max;
+}
 
 /* Creates an svg of the path taken by the worm.
  * The size of the svg is determined by calculating the highest and lowest possible
@@ -277,12 +291,8 @@ void map_to_svg(point ** map) {
  * this has O(n^2) running time, it only has to be done a single time AND there are significant storage savings.
  */
 void create_svg(point ** map) {
-	printf("<!--(%d, %d, %d, %d)-->\n", min_x, max_x, min_y, max_y);
-	int min_px = 10*(min_x-start) - 5*(max_y-start);
-	int max_px = 10*(max_x-start) + 5*(max_y-start);
-	int min_py = -5*sqrt(3)*(max_y - start);
-	int max_py = -5*sqrt(3)*(min_y - start);
-	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_px, min_py, max_px-min_px, max_py-min_py);
+  float* min_max = find_min_max(map, 10);
+	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%.3f %.3f %.3f %.3f\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_max[0], min_max[2], min_max[1]-min_max[0], min_max[3]-min_max[2]);
 	printf("<g>\n");
 	map_to_svg(map);
 	printf("</g>\n");
@@ -296,10 +306,6 @@ int main() {
   translate_field_array(field_array);
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
 	start = size/2;
-	min_x = start;
-	min_y = start;
-	max_x = start;
-	max_y = start;
 
   //Should probably check this before continuing.
   //Hardcode in this step since this is an arbitrary movement to the right
