@@ -225,22 +225,15 @@ point** init_graph(int size) {
   return map;
 }
 
+
+/* Prints out the line tags for the svg to standard out.
+ * Iterates through the array and for each vertex, goes through the six edges. If an edge is marked as crossed
+ * then we calculate an adjusted i and j (shifted over by our starting value since we started at (start, start)).
+ * Then we determine the x and y values for each end of the line. Line length is fixed at 10.
+ * The edge in the vertex at the end of the line is then set to 0 so it is not recalculated.
+ */
+// This should probably be changed to output a path as it goes on in order to cut down on line tags
 void map_to_svg(point ** map) {
-	/*Iterate through map
-		For each encounter, set to false (and set its corresponding edge in another node as false)
-		Create a line based on this.
-		Going to need to calculate lattice point coordinates based on line length
-		Optimization (storage but not runtime): Truncate coordinates to two or three decimal places
-			This is because svg size is dependent on the number of characters in the markup
-			Not truncating leaves about 17*numLines characters
-	*/
-
-	//Let x y = 0,0 be the center. Moving along the horizontal lines translates you 
-	//http://clintbellanger.net/articles/isometric_math/
-
-
-	//Try timing this with it all in one giant printf, and one where it's broken up. I'm not sure how much overhead
-	//there will be from calling printf again just to print the closing tag
 	int i,j;
 	for(i = 0; i < size; i++) {
 		for(j = 0; j < size; j++) {
@@ -268,9 +261,7 @@ void map_to_svg(point ** map) {
 					map[i][j].edges &= ~(1 << t);
 					map[i+DIR_MATRIX[t][0]][j+DIR_MATRIX[t][1]].edges &= ~(1 << ((t+3) % 6));
 
-					//This should probably be changed to make it output a path as it goes on in order to reduce the amount of memory
-					printf("<line x1=\"%d\" x2=\"%d\" y1=\"%.3f\" y2=\"%.3f\" stroke=\"#000000\" style=\"stroke-width: 2; stroke-linecap: round;\">", p_x, p_nx, p_y, p_ny);
-					printf("</line>");//<!--(%d, %d) to (%d, %d)-->\n", i, j, i+DIR_MATRIX[t][0], j+DIR_MATRIX[t][1]);
+					printf("<line x1=\"%d\" x2=\"%d\" y1=\"%.3f\" y2=\"%.3f\" stroke=\"#000000\" style=\"stroke-width: 2; stroke-linecap: round;\"></line>", p_x, p_nx, p_y, p_ny);
 				}
 			}
 		}
