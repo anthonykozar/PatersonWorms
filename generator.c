@@ -245,31 +245,13 @@ void map_to_svg(point ** map) {
 	for(i = 0; i < size; i++) {
 		for(j = 0; j < size; j++) {
 			point p = map[i][j];
-			if(DEBUG) {
-		  	int w;
-		  	printf("c_edges: ");
-		  	for(w = 0; w < 6; w++)
-		    	printf("%d ", 0 || map[i][j].edges & (1 << w));
-		    printf("\n");
-		  }
 			if(p.edges == 0)
 				continue;
 			char c = p.edges;
 			int t;
 
-
-// (-5, -5) (-1,1) 					(5, -5) (0,1)
-//                \        /
-//(-10, 0) (-1,0) --(0,0)-- (10, 0) (1,0)
-//        				/        \
-// (-5, 5) (0,-1)           (5, 5) (1,-1)
 			for(t = 0; t < 6; t++) {
-				//if there is an edge in this direction
 				if(c & (1 << t)) {
-					//we need to:
-					//draw the line
-					//set this bit to 0 in map and set its partner's bit to 0 as well.
-					//might want to do a bounds check here too.
 					double p_y, p_ny;
 					int p_x, p_nx;
 
@@ -295,6 +277,14 @@ void map_to_svg(point ** map) {
 	}
 }
 
+
+/* Creates an svg of the path taken by the worm.
+ * The size of the svg is determined by calculating the highest and lowest possible
+ * values of x and y coordinates. 
+ *
+ * This should be updated later to actually search the array to get exact values. Although
+ * this has O(n^2) running time, it only has to be done a single time AND there are significant storage savings.
+ */
 void create_svg(point ** map) {
 	printf("<!--(%d, %d, %d, %d)-->\n", min_x, max_x, min_y, max_y);
 	int min_px = 10*(min_x-start) - 5*(max_y-start);
@@ -302,9 +292,9 @@ void create_svg(point ** map) {
 	int min_py = -5*sqrt(3)*(max_y - start);
 	int max_py = -5*sqrt(3)*(min_y - start);
 	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%d %d %d %d\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_px, min_py, max_px-min_px, max_py-min_py);
-	printf("\t<g>\n");
+	printf("<g>\n");
 	map_to_svg(map);
-	printf("\t</g>\n");
+	printf("</g>\n");
 	printf("</svg>\n");
 }
 
@@ -321,6 +311,7 @@ int main() {
 	max_y = start;
 
   //Should probably check this before continuing.
+  //Hardcode in this step since this is an arbitrary movement to the right
   move_to(map, start, start, start+1, start, 0);
   // Start "moving" the worm
 	int step = 1;
