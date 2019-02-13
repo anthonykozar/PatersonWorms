@@ -302,7 +302,9 @@ float* find_min_max(point ** map, int line_length) {
 void create_svg(point ** map) {
   float* min_max = find_min_max(map, 10);
 	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%.3f %.3f %.3f %.3f\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_max[0], min_max[2], min_max[1]-min_max[0], min_max[3]-min_max[2]);
-	printf("<g>\n");
+	free(min_max);
+
+  printf("<g>\n");
 	map_to_svg(map);
 	printf("</g>\n");
 	printf("</svg>\n");
