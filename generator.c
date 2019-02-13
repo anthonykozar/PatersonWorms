@@ -208,6 +208,15 @@ point** init_graph(int size) {
   return map;
 }
 
+/* Free the map when it is no longer needed.
+ */
+void free_map(point ** map) {
+  int i;
+  for(i = 0; i < size; i++) {
+    free(map[i]);
+  }
+  free(map);
+}
 
 /* Prints out the line tags for the svg to standard out.
  * Iterates through the array and for each vertex, goes through the six edges. If an edge is marked as crossed
@@ -321,4 +330,5 @@ int main() {
       break;
   }
 	create_svg(map);
+  free_map(map);
 }
