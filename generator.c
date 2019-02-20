@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include <float.h>
 #include <string.h>
+#include <argp.h>
+#include <limits.h>
 
 int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
@@ -22,6 +24,113 @@ int size = 100;
 
 int start;
 
+
+/* Variables for argp usage */
+
+const char *argp_program_version =
+  "pwormgen 1.0";
+const char *argp_program_bug_address =
+  "<andmcadams@gmail.com>";
+
+  /* Program documentation. */
+static char doc[] =
+  "Paterson's Worm Generator -- a program that creates images of Paterson's worms' paths";
+
+  /* A description of the arguments we accept. */
+static char args_doc[] = "";
+
+  /* The options we understand. */
+static struct argp_option options[] = {
+  {"rule", 'r', "RULE", 0, "Create a worm following rule RULE"},
+  {"size", 's', "INT", 0, "Run worm on a map of size INT"},
+  {"output", 'o', "FILE", 0, "Output to FILE instead of standard output" },
+  { 0 }
+};
+
+  /* Used by main to communicate with parse_opt. */
+struct arguments
+{
+  int rule[7];
+  int size;
+  char *output_file;
+};
+
+/* Print out the constraints required for rules.
+ * This is called when the user inputs an invalid rule.
+ */
+void print_rule_restrictions() {
+  printf("Rules must be strings of seven integers.\n");
+  printf("The first integer must be one of {0, 1}.\n");
+  printf("The second integer must be one of {0, 1, 2, 3}.\n");
+  printf("The third through sixth integers must be one of {0, 1, 2}.\n");
+  printf("The seventh integer must be one of {0, 1}.\n");
+}
+
+/* Validate rule input */
+int validate_rule(struct arguments *arguments, char* rule) {
+  if(strlen(rule) != 7)
+    return 0;
+  int max_val[7] = {1, 3, 2, 2, 2, 2, 1};
+  int i;
+  int flag = 0;
+  for(i = 0 ; i < 7; i++) {
+    if((int) rule[i]-'0' > max_val[i] || (int) rule[i]-'0' < 0) {
+      printf("Problem with integer in pos %d:\t%d\t(max %d)\n", i, (int) rule[i]-'0', max_val[i]);
+      flag = 1;     
+    }
+    else
+      arguments->rule[i] = (int) rule[i]-'0';
+  }
+  if(flag)
+    return 0;
+  return 1;
+}
+
+/* Parse a single option. */
+static error_t
+parse_opt (int key, char *arg, struct argp_state *state)
+{
+  /* Get the input argument from argp_parse, which we
+     know is a pointer to our arguments structure. */
+  struct arguments *arguments = state->input;
+  switch (key)
+    {
+    case 'r':
+      if(!validate_rule(arguments, arg)) {
+        printf("Invalid rule passed: %s\n", arg);
+        print_rule_restrictions();
+        exit(1);
+      }
+      break;
+    case 's': {     
+      long l = strtol(arg, NULL, 10);
+      if(errno != 0 && l == 0) {
+        printf("strtol encountered an error.\nExiting...\n");
+        exit(1);
+      }
+      if(l > INT_MAX || l < 1) {
+        printf("Value is not a positive integer: %ld\nExiting...", l);
+        exit(1);
+      }
+      arguments->size = (int) l;
+      // Should probably add a check to make sure they aren't trying to make an absurdly large array that will consume all of the computer's memory
+      break;
+    }
+    case 'o':
+      arguments->output_file = arg;
+      break;
+    case ARGP_KEY_ARG:
+      if (state->arg_num >= 1)
+        /* Too many arguments. */
+        argp_usage (state);
+      break;
+    case ARGP_KEY_END:
+      break;
+    default:
+      return ARGP_ERR_UNKNOWN;
+    }
+  return 0;
+}
 
 /* Point structs are created in case more data ever wants to be added to a point.
  * This could be useful for keeping track of coloring, numbering, etc.
@@ -295,9 +404,6 @@ float* find_min_max(point ** map, int line_length) {
 /* Creates an svg of the path taken by the worm.
  * The size of the svg is determined by calculating the highest and lowest possible
  * values of x and y coordinates. 
- *
- * This should be updated later to actually search the array to get exact values. Although
- * this has O(n^2) running time, it only has to be done a single time AND there are significant storage savings.
  */
 void create_svg(point ** map) {
   float* min_max = find_min_max(map, 10);
@@ -310,11 +416,25 @@ void create_svg(point ** map) {
 	printf("</svg>\n");
 }
 
-int main() {
-	point** map = init_graph(size);
+/* Our argp parser. */
+static struct argp argp = { options, parse_opt, args_doc, doc };
+
+int main(int argc, char **argv) {
 	int i,j;
-  int field_array[7] = {0, 1, 2, 1, 0, 2, 0};
-  translate_field_array(field_array);
+  //int field_array[7] = {0, 1, 2, 1, 0, 2, 0};
+  struct arguments arguments;
+
+  /* Default values. */
+  for(int i = 0; i < 7; i++)
+    arguments.rule[i] = 0;
+  arguments.size = 100;
+  arguments.output_file = "-";
+  argp_parse (&argp, argc, argv, 0, 0, &arguments);
+  size = arguments.size;
+
+  point** map = init_graph(size);
+
+  translate_field_array(arguments.rule);
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
 	start = size/2;
 
