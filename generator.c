@@ -20,7 +20,7 @@ int DEBUG = 0;
 int DIR_MATRIX[6][2] = {{1, 0}, {1, -1}, {0, -1}, {-1, 0}, {-1, 1}, {0, 1}};
 int translated_field_array[11];
 
-int size = 100;
+//int size = 100;
 
 int start;
 
@@ -169,7 +169,7 @@ void translate_field_array(int* field_array) {
  *
  * Returns true if the worm is moved successfully and false if the worm cannot be moved to (x, y).
  */
-bool move_to(point** map, int c_x, int c_y, int x, int y, int to_dir) {
+bool move_to(point** map, int size, int c_x, int c_y, int x, int y, int to_dir) {
   if(DEBUG) {
     printf("move_to(%d, %d, %d, %d, %d)\n", c_x, c_y, x, y, to_dir);
   }
@@ -256,7 +256,7 @@ int get_number_paths_to_pass(char edges, int dir, int eaten) {
  * Returns true if the worm was successfully moved. The array retval is also updated to reflect
  * the worms new x coord, y coord, and direction. Otherwise returns false.
  */
-bool determine_move(point** map, int* retval, int step) {
+bool determine_move(point** map, int size, int* retval, int step) {
   if(DEBUG) {
     printf("determineMove(map, [%d, %d, %d], %d)\n", retval[0], retval[1], retval[2], step);
     printf("c_edges: ");
@@ -286,7 +286,7 @@ bool determine_move(point** map, int* retval, int step) {
     int x = c_x + DIR_MATRIX[new_dir][0];
     int y = c_y + DIR_MATRIX[new_dir][1];
 
-    if(move_to(map, c_x, c_y, x, y, new_dir))
+    if(move_to(map, size, c_x, c_y, x, y, new_dir))
     {
 	    retval[0] = x;
 	    retval[1] = y;
@@ -319,7 +319,7 @@ point** init_graph(int size) {
 
 /* Free the map when it is no longer needed.
  */
-void free_map(point ** map) {
+void free_map(point ** map, int size) {
   int i;
   for(i = 0; i < size; i++) {
     free(map[i]);
@@ -334,7 +334,7 @@ void free_map(point ** map) {
  * The edge in the vertex at the end of the line is then set to 0 so it is not recalculated.
  */
 // This should probably be changed to output a path as it goes on in order to cut down on line tags
-void map_to_svg(point ** map) {
+void map_to_svg(point ** map, int size) {
 	int i,j;
 	for(i = 0; i < size; i++) {
 		for(j = 0; j < size; j++) {
@@ -373,7 +373,7 @@ void map_to_svg(point ** map) {
  * This will iterate through the entire map, but losing a bit of performance to reduce storage
  * is preferable in this situation since I have limited storage.
  */
-float* find_min_max(point ** map, int line_length) {
+float* find_min_max(point ** map, int size, int line_length) {
   float* min_max = malloc(4*sizeof(float));
   float tmp_arr[4] = {FLT_MAX, -FLT_MAX, FLT_MAX, -FLT_MAX};
   memcpy(min_max, tmp_arr, 4*sizeof(float));
@@ -405,13 +405,13 @@ float* find_min_max(point ** map, int line_length) {
  * The size of the svg is determined by calculating the highest and lowest possible
  * values of x and y coordinates. 
  */
-void create_svg(point ** map) {
-  float* min_max = find_min_max(map, 10);
+void create_svg(point ** map, int size) {
+  float* min_max = find_min_max(map, size, 10);
 	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%.3f %.3f %.3f %.3f\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_max[0], min_max[2], min_max[1]-min_max[0], min_max[3]-min_max[2]);
 	free(min_max);
 
   printf("<g>\n");
-	map_to_svg(map);
+	map_to_svg(map, size);
 	printf("</g>\n");
 	printf("</svg>\n");
 }
@@ -430,27 +430,26 @@ int main(int argc, char **argv) {
   arguments.size = 100;
   arguments.output_file = "-";
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
-  size = arguments.size;
 
-  point** map = init_graph(size);
+  point** map = init_graph(arguments.size);
 
   translate_field_array(arguments.rule);
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
-	start = size/2;
+	start = arguments.size/2;
 
   //Should probably check this before continuing.
   //Hardcode in this step since this is an arbitrary movement to the right
-  move_to(map, start, start, start+1, start, 0);
+  move_to(map, arguments.size, start, start, start+1, start, 0);
   // Start "moving" the worm
 	int step = 1;
   int retval[3] = {start+1, start, 0};
 
   while(1){
     step += 1;
-    bool success = determine_move(map, retval, step);
+    bool success = determine_move(map, arguments.size, retval, step);
     if(!success)
       break;
   }
-	create_svg(map);
-  free_map(map);
+	create_svg(map, arguments.size);
+  free_map(map, arguments.size);
 }
