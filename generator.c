@@ -429,17 +429,23 @@ int main(int argc, char **argv) {
     arguments.rule[i] = 0;
   arguments.size = 100;
   arguments.output_file = "-";
+
+  /* Parse the args */
   argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
+  /* Create the map */
   point** map = init_graph(arguments.size);
 
+  /* Translate the rule input to the easier to understand rules */
   translate_field_array(arguments.rule);
+
 	//We want to start in the middle of the array. This is not always optimal, but it is simple to implement.
 	start = arguments.size/2;
 
   //Should probably check this before continuing.
   //Hardcode in this step since this is an arbitrary movement to the right
   move_to(map, arguments.size, start, start, start+1, start, 0);
+  
   // Start "moving" the worm
 	int step = 1;
   int retval[3] = {start+1, start, 0};
