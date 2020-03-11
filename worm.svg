@@ -1,0 +1,7 @@
+<!--(499, 501, 499, 501)-->
+<svg height="100%" version="1.1" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="-15 -8 30 16" onresize="fixBounds()">
+<desc></desc>
+<defs></defs>
+	<g>
+<line x1="-10" x2="0" y1="-0.000" y2="-0.000" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="-10" x2="-5" y1="-0.000" y2="8.660" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="-5" x2="5" y1="-8.660" y2="-8.660" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="-5" x2="0" y1="-8.660" y2="-0.000" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="-5" x2="0" y1="8.660" y2="-0.000" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="0" x2="10" y1="-0.000" y2="-0.000" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="0" x2="5" y1="-0.000" y2="8.660" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="0" x2="5" y1="-0.000" y2="-8.660" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line><line x1="5" x2="10" y1="8.660" y2="-0.000" stroke="#000000" style="stroke-width: 2; stroke-linecap: round;"></line>	</g>
+</svg>
