@@ -405,7 +405,7 @@ float* find_min_max(point ** map, int size, int line_length) {
  * The size of the svg is determined by calculating the highest and lowest possible
  * values of x and y coordinates. 
  */
-void create_svg(point ** map, int size) {
+void create_svg(point ** map, int size, FILE* file) {
   float* min_max = find_min_max(map, size, 10);
 	printf("<svg height=\"100%%\" version=\"1.1\" width=\"100%%\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%.3f %.3f %.3f %.3f\" onresize=\"fixBounds()\">\n<desc></desc>\n<defs></defs>\n", min_max[0], min_max[2], min_max[1]-min_max[0], min_max[3]-min_max[2]);
 	free(min_max);
@@ -456,6 +456,10 @@ int main(int argc, char **argv) {
     if(!success)
       break;
   }
-	create_svg(map, arguments.size);
+
+  /* Open the file, or create it if does not already exist */
+  if(arguments.output_file != "-")
+    FILE* file = fopen(arguments.output_file, 'w');
+	create_svg(map, arguments.size, arguments.output_file);
   free_map(map, arguments.size);
 }
