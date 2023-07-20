@@ -295,6 +295,10 @@ function submitNewWorm() {
   initWorm();
 }
 
+function stopWorm() {
+  clearTimeout(timer);
+}
+
 function createTable() {
   var table = document.createElement("TABLE");
   var body = document.getElementsByTagName("body")[0];
@@ -333,10 +337,15 @@ function createTable() {
   
   var submit_button = document.createElement("BUTTON");
   submit_button.setAttribute("onclick", "submitNewWorm()");
-  submit_button.innerHTML = "Submit"
+  submit_button.innerHTML = "Run"
   body.appendChild(submit_button);
 
-  body.appendChild(document.createElement("br"));
+  var stop_button = document.createElement("BUTTON");
+  stop_button.setAttribute("onclick", "stopWorm()");
+  stop_button.innerHTML = "Stop"
+  body.appendChild(stop_button);
+
+ body.appendChild(document.createElement("br"));
 
   stroke_width_slider_label = document.createElement("label");
   stroke_width_slider_label.setAttribute("for", "stroke_width_slider");
