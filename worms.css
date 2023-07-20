@@ -1,9 +1,26 @@
-svg {
+#control-panel {
+  width: 200px;
+  float: left;
+}
+
+#main {
+  width: auto;
+}
+
+svg#worms-sim {
   border: 1px solid black;
-  width: 100%;
-  height: 100%;
+  width: 1000px;
+  height: 600px;
 }
 
 html, body {
   height: 100%;
+}
+
+/* mobile styles */
+
+@media screen and (max-width: 780px) {
+  svg#worms-sim {
+	width: 100%;
+  }
 }

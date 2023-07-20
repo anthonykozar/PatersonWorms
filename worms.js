@@ -47,7 +47,7 @@ var stroke_width = 2;
 
 createTable();
 
-var snap = Snap();
+var snap = Snap("#worms-sim");
 var snap_center_x;
 var snap_center_y;
 var line_length;
@@ -301,7 +301,7 @@ function stopWorm() {
 
 function createTable() {
   var table = document.createElement("TABLE");
-  var body = document.getElementsByTagName("body")[0];
+  var body = document.getElementById("control-panel");
   body.appendChild(table);
 
   var header_row = document.createElement("TR");
