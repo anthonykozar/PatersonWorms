@@ -17,6 +17,10 @@ html, body {
   height: 100%;
 }
 
+label {
+  margin-right: 20px;
+}
+
 /* mobile styles */
 
 @media screen and (max-width: 780px) {

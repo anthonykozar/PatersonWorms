@@ -40,6 +40,7 @@ var choice3b4_f = [0, 1, 2];
 var choice4_f = [0, 1];
 
 
+var stepcount = 0;
 
 var speed = 100;
 var zoom_speed = 10;
@@ -56,6 +57,7 @@ var group;
 var timer;
 var resize_timer;
 var stroke_width_slider;
+var step_number_val_label;
 
 /* addVertex
 ** x - An x value on the lattice
@@ -257,6 +259,15 @@ function determineMove(c_x, c_y, c_dir, step) {
   return false;
 }
 
+/* setStepCounter(step)
+** step - current step count
+** 
+** Update the step counter on the web page.
+*/
+function setStepCounter(step) {
+    stepcount = step;
+    step_number_val_label.innerHTML = String(stepcount);
+}
 
 /* nextStep
 ** cx - Current x value on the lattice
@@ -272,6 +283,8 @@ function nextStep(step, cx, cy, cd){
     if(updated_pos == false) {
       return false;
     };
+    
+    setStepCounter(step);
     timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, speed);
 }
 
@@ -393,6 +406,13 @@ function createTable() {
   body.appendChild(speed_slider_label);
   body.appendChild(document.createElement("br"));
   body.appendChild(speed_slider);
+  
+  var step_number_label = document.createElement("label");
+  step_number_label.innerHTML = "Step number";
+  step_number_val_label = document.createElement("label");
+  body.appendChild(document.createElement("br"));
+  body.appendChild(step_number_label);
+  body.appendChild(step_number_val_label);
 }
 
 function fixBounds() {
@@ -418,6 +438,7 @@ function initWorm() {
 
   addVertex(0,0);
   moveTo(0, 0, 1, 0, 0, 1);
+  stepcount = 1;
   // Start "moving" the worm
   timer = setTimeout(function(){
     nextStep(2, 1, 0, 0);}, speed);
