@@ -482,7 +482,7 @@ function initWorm() {
   snap.attr({viewBox: (-window.innerWidth/2) + " " + (-window.innerHeight/2) + " " + window.innerWidth + " " + window.innerHeight, onresize: "fixBounds()"});
   snap_center_x = 0;
   snap_center_y = 0;
-  line_length = 10;
+  line_length = 20;
   zoom = 1.0;
   group = snap.g();
 
