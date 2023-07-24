@@ -30,17 +30,18 @@ var field_array = [1, 2, 2, 1, 0, 2, 0];
 //Unfortunately, going clockwise seems to be the only possibility since js insists that -1 % n = -1 even though its modulus is n-1.
 //This gets confusing quickly, and I may refactor this out later since it already makes the code terse.
 
-var choice1_f = [3, 4];
-var choice2_f = [0,1,2,3];
-var choice3t_f = [0,1,2];
-var choice3b1_f = [2,0,1];
-var choice3b2_f = [1,0,2];
-var choice3b3_f = [1,0,2];
-var choice3b4_f = [0, 1, 2];
-var choice4_f = [0, 1];
-
+var choice1_f = [3, 4];          // Beeler field 4000
+var choice2_f = [0,1,2,3];       // Beeler field 6
+var choice3t_f = [0,1,2];        // Beeler field 3000, 600, 140, or 30 ?
+var choice3b1_f = [2,0,1];       // Beeler field 3000 ?
+var choice3b2_f = [1,0,2];       // Beeler field 600
+var choice3b3_f = [1,0,2];       // Beeler field 140 ?
+var choice3b4_f = [0, 1, 2];     // Beeler field 30 ?
+var choice4_f = [0, 1];          // Beeler field 1
 
 var stepcount = 0;
+var Sven_rule_string;
+var Beeler_rule_string;
 
 var speed = 100;
 var zoom_speed = 10;
@@ -58,6 +59,8 @@ var timer;
 var resize_timer;
 var stroke_width_slider;
 var step_number_val_label;
+var svens_rule_val_label;
+var beelers_rule_val_label;
 
 /* addVertex
 ** x - An x value on the lattice
@@ -288,8 +291,7 @@ function nextStep(step, cx, cy, cd){
     timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, speed);
 }
 
-
-function submitNewWorm() {
+function getInputFields() {
   var new_fields = [];
   for(var i = 0; i < field_suffixes.length; i++) {
     new_fields[i] = document.querySelector('input[name = "field' + field_suffixes[i] + '"]:checked');
@@ -298,7 +300,14 @@ function submitNewWorm() {
       return false;
     }
   }
+  
+  return new_fields;
+}
 
+function submitNewWorm() {
+  var new_fields = getInputFields();
+  if (new_fields == false) return false;
+  
   clearTimeout(timer);
   snap.clear();
 
@@ -310,6 +319,32 @@ function submitNewWorm() {
 
 function stopWorm() {
   clearTimeout(timer);
+}
+
+/* setBeelersRule()
+** Calculates Beeler's rule number based on the input fields
+** and displays it on the web page.
+*/
+function setBeelersRule() {
+    // Beeler's notation is the sum of shifted bit-fields for each field that are
+    // 1 or 2 bits wide and is represented as a 4-digit octal number.
+    // See "Paterson's Worm", MIT Artificial Intelligence Memo no. 290, June 1973.
+    // https://dspace.mit.edu/handle/1721.1/6210
+    // These are the decimal multipliers for each field:
+    const field_multipliers = [2048, 2, 512, 128, 32, 8, 1]
+    
+    var rule_num = 0;
+    var new_fields = getInputFields();
+    for(var i = 0; i < field_multipliers.length; i++) {
+        rule_num += field_multipliers[i] * parseInt(new_fields[i].value);
+    }
+    
+    // convert rule_num to a 4-digit octal string
+    var rule_str = rule_num.toString(8);
+    while (rule_str.length < 4) rule_str = "0" + rule_str;
+    
+    Beeler_rule_string = rule_str;
+    beelers_rule_val_label.innerHTML = Beeler_rule_string;
 }
 
 function createTable() {
@@ -339,6 +374,7 @@ function createTable() {
         x.setAttribute("value", i-1);
         if(field_array[j] == i-1)
           x.checked = true;
+        x.setAttribute("onclick", "setBeelersRule()");
         td.appendChild(x);
       }
       else {
@@ -409,10 +445,24 @@ function createTable() {
   
   var step_number_label = document.createElement("label");
   step_number_label.innerHTML = "Step number";
+  var svens_rule_label = document.createElement("label");
+  svens_rule_label.innerHTML = "Sven's rule";
+  var beelers_rule_label = document.createElement("label");
+  beelers_rule_label.innerHTML = "Beeler's rule";
+
   step_number_val_label = document.createElement("label");
+  svens_rule_val_label = document.createElement("label");
+  beelers_rule_val_label = document.createElement("label");
+
   body.appendChild(document.createElement("br"));
   body.appendChild(step_number_label);
   body.appendChild(step_number_val_label);
+  body.appendChild(document.createElement("br"));
+  body.appendChild(svens_rule_label);
+  body.appendChild(svens_rule_val_label);
+  body.appendChild(document.createElement("br"));
+  body.appendChild(beelers_rule_label);
+  body.appendChild(beelers_rule_val_label);
 }
 
 function fixBounds() {
