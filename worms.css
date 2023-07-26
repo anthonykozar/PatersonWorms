@@ -9,6 +9,7 @@
 
 svg#worms-sim {
   border: 1px solid black;
+  margin: 20px 0px 0px 0px;
   width: 1000px;
   height: 600px;
 }
@@ -17,8 +18,16 @@ html, body {
   height: 100%;
 }
 
+h1 {
+  margin: 20px 0px 0px 0px;
+}
+
 label {
   margin-right: 20px;
+}
+
+p.credits {
+  margin: 0px 0px 0px 0px;
 }
 
 /* mobile styles */
