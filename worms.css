@@ -1,5 +1,5 @@
 #control-panel {
-  width: 200px;
+  width: 280px;
   float: left;
 }
 
@@ -10,7 +10,7 @@
 svg#worms-sim {
   border: 1px solid black;
   margin: 20px 0px 0px 0px;
-  width: 1000px;
+  width: 920px;
   height: 600px;
 }
 
@@ -24,6 +24,10 @@ h1 {
 
 label {
   margin-right: 20px;
+}
+
+td label {
+  margin-right: 5px;
 }
 
 p.credits {

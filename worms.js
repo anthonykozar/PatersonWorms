@@ -39,6 +39,14 @@ var choice3b3_f = [1,0,2];       // Beeler field 140 ?
 var choice3b4_f = [0, 1, 2];     // Beeler field 30 ?
 var choice4_f = [0, 1];          // Beeler field 1
 
+// Beeler's notation is the sum of shifted bit-fields for each field that are
+// 1 or 2 bits wide and is represented as a 4-digit octal number.
+// See "Paterson's Worm", MIT Artificial Intelligence Memo no. 290, June 1973.
+// https://dspace.mit.edu/handle/1721.1/6210
+// These are the decimal multipliers for each field:
+const FIELD_MULTIPLIERS = [2048, 2, 512, 128, 32, 8, 1];
+
+
 var stepcount = 0;
 var Sven_rule_string;
 var Beeler_rule_string;
@@ -326,17 +334,10 @@ function stopWorm() {
 ** and displays it on the web page.
 */
 function setBeelersRule() {
-    // Beeler's notation is the sum of shifted bit-fields for each field that are
-    // 1 or 2 bits wide and is represented as a 4-digit octal number.
-    // See "Paterson's Worm", MIT Artificial Intelligence Memo no. 290, June 1973.
-    // https://dspace.mit.edu/handle/1721.1/6210
-    // These are the decimal multipliers for each field:
-    const field_multipliers = [2048, 2, 512, 128, 32, 8, 1]
-    
     var rule_num = 0;
     var new_fields = getInputFields();
-    for(var i = 0; i < field_multipliers.length; i++) {
-        rule_num += field_multipliers[i] * parseInt(new_fields[i].value);
+    for(var i = 0; i < FIELD_MULTIPLIERS.length; i++) {
+        rule_num += FIELD_MULTIPLIERS[i] * parseInt(new_fields[i].value);
     }
     
     // convert rule_num to a 4-digit octal string
@@ -375,6 +376,11 @@ function createTable() {
         if(field_array[j] == i-1)
           x.checked = true;
         x.setAttribute("onclick", "setBeelersRule()");
+        td.appendChild(x);
+        // add labels for Beeler's rule codes next to radio buttons
+        x = document.createElement("label");
+        var code = (i-1) * FIELD_MULTIPLIERS[j];
+        x.innerHTML = code.toString(8);
         td.appendChild(x);
       }
       else {
