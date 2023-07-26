@@ -469,6 +469,7 @@ function createTable() {
   body.appendChild(document.createElement("br"));
   body.appendChild(beelers_rule_label);
   body.appendChild(beelers_rule_val_label);
+  setBeelersRule();
 }
 
 function fixBounds() {
