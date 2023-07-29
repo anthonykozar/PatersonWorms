@@ -15,7 +15,7 @@ svg#worms-sim {
 }
 
 html, body {
-  height: 100%;
+  /* height: 100%; */
 }
 
 h1 {
@@ -24,6 +24,10 @@ h1 {
 
 label {
   margin-right: 20px;
+}
+
+button {
+  margin-right: 5px;
 }
 
 td label {
@@ -37,7 +41,17 @@ p.credits {
 /* mobile styles */
 
 @media screen and (max-width: 780px) {
+  #control-panel {
+	width: auto;
+	float: none;
+  }
+
+  /* #rules-panel {
+	display: none;
+  } */
+
   svg#worms-sim {
 	width: 100%;
+	height: auto;
   }
 }

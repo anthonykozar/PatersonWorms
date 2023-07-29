@@ -1,3 +1,5 @@
+const MOBILE_MAX_WIDTH = 780;  // this should match the @media selector in worms.css
+
 var edges;
 var DEBUG = false;
 var DIR_MATRIX = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
@@ -329,6 +331,16 @@ function stopWorm() {
   clearTimeout(timer);
 }
 
+function toggleRulesPanel() {
+  rulespanel = document.getElementById("rules-panel");
+  if (rulespanel.style.display != "none") {
+    rulespanel.style.display = "none";
+  }
+  else {
+    rulespanel.style.display = "block";
+  }  
+}
+
 /* setBeelersRule()
 ** Calculates Beeler's rule number based on the input fields
 ** and displays it on the web page.
@@ -349,10 +361,31 @@ function setBeelersRule() {
 }
 
 function createTable() {
-  var table = document.createElement("TABLE");
   var body = document.getElementById("control-panel");
-  body.appendChild(table);
 
+  // only show button to show/hide rules on mobile
+  if (window.innerWidth <= MOBILE_MAX_WIDTH) {
+	var rules_button = document.createElement("BUTTON");
+	rules_button.setAttribute("onclick", "toggleRulesPanel()");
+	rules_button.innerHTML = "Edit Rules"
+	body.appendChild(rules_button);
+  }
+  
+  // create a div panel to contain the rule controls
+  var rulespanel = document.createElement("div");
+  rulespanel.id = "rules-panel";
+  if (window.innerWidth <= MOBILE_MAX_WIDTH) {
+    rulespanel.style.display = "none";
+  }
+  else {
+    rulespanel.style.display = "block";
+  }
+  body.appendChild(rulespanel);
+  
+  // create the rules table
+  var table = document.createElement("TABLE");
+  rulespanel.appendChild(table);
+  
   var header_row = document.createElement("TR");
   for(var i = 0; i < 5; i++) {
     var header = document.createElement("TH");
@@ -400,7 +433,7 @@ function createTable() {
   stop_button.innerHTML = "Stop"
   body.appendChild(stop_button);
 
- body.appendChild(document.createElement("br"));
+  body.appendChild(document.createElement("br"));
 
   stroke_width_slider_label = document.createElement("label");
   stroke_width_slider_label.setAttribute("for", "stroke_width_slider");
