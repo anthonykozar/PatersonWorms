@@ -35,7 +35,16 @@ td label {
 }
 
 p.credits {
+  font-size: 14px;
   margin: 0px 0px 0px 0px;
+}
+
+p.quotation {
+  font-style: italic;
+}
+
+a {
+  text-decoration: none;
 }
 
 /* mobile styles */
