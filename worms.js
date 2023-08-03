@@ -7,7 +7,7 @@ var DIR_MATRIX = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
 var field_suffixes = ["1", "2", "3_1", "3_2", "3_3", "3_4", "4"];
 
 //Default field choices
-var field_array = [1, 2, 2, 1, 0, 2, 0];
+var field_array = [1, 0, 0, 0, 0, 0, 0];
 
 
 //  4   5
