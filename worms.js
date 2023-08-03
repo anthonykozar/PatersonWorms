@@ -331,14 +331,29 @@ function stopWorm() {
   clearTimeout(timer);
 }
 
-function toggleRulesPanel() {
-  rulespanel = document.getElementById("rules-panel");
-  if (rulespanel.style.display != "none") {
-    rulespanel.style.display = "none";
+function toggleElement(elementid) {
+  elem = document.getElementById(elementid);
+  if (elem.style.display != "none") {
+    elem.style.display = "none";
   }
   else {
-    rulespanel.style.display = "block";
-  }  
+    elem.style.display = "block";
+  }
+}
+
+function toggleRulesPanel() {
+  toggleElement("control-panel");
+}
+
+function toggleIntroPanel() {
+  toggleElement("intro-panel");
+  elem = document.getElementById("toggle-intro");
+  if (elem.innerHTML != "+") {
+    elem.innerHTML = "+";
+  }
+  else {
+    elem.innerHTML = "-";
+  }
 }
 
 /* setBeelersRule()

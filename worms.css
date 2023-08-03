@@ -19,7 +19,8 @@ html, body {
 }
 
 h1 {
-  margin: 20px 0px 0px 0px;
+  margin: 20px 5px 0px 0px;
+  display: inline;
 }
 
 label {
@@ -32,6 +33,17 @@ button {
 
 td label {
   margin-right: 5px;
+}
+
+p.hide-button {
+  display: inline;
+  color: white;
+  background-color: #AAA;
+  padding: 2px 7px;
+  border-radius: 15px;
+  vertical-align: top;
+  font-family: "Monaco", monospaced;
+  font-size: 10pt;
 }
 
 p.credits {

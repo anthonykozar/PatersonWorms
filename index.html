@@ -10,15 +10,21 @@
 <div id="control-panel"></div>
 <div id="main">
   <h1>Paterson's Worms</h1>
-  <p class="credits">Implementation by <a href="https://github.com/andmcadams/PatersonWorms">Andrew McAdams</a></p>
-  <p class="credits">Tweaked by <a href="https://github.com/anthonykozar/PatersonWorms">Anthony Kozar</a></p>
+  <p id="toggle-intro" class="hide-button" onclick="toggleIntroPanel()">-</p>
   
-  <p class="quotation">"Paterson's worms are a family of cellular automata [simulations] devised in 1971 by Mike Paterson and John Horton Conway to model the behaviour and feeding patterns of certain prehistoric worms. In the model, a worm moves between points on a triangular grid along line segments, representing food. Its turnings are determined by the configuration of eaten and uneaten line segments adjacent to the point at which the worm currently is. Despite being governed by simple rules the behaviour of the worms can be extremely complex, and the ultimate fate of one variant is still unknown."</p>
+  <div id="intro-panel">
+    <p class="credits">Implementation by <a href="https://github.com/andmcadams/PatersonWorms">Andrew McAdams</a></p>
+    <p class="credits">Tweaked by <a href="https://github.com/anthonykozar/PatersonWorms">Anthony Kozar</a></p>
   
-  <p class="credits">Quotation from Wikipedia used with permission under the Creative Commons Attribution-ShareAlike License 4.0.</p>
+    <p class="quotation">"Paterson's worms are a family of cellular automata [simulations] devised in 1971 by Mike Paterson and John Horton Conway to model the behaviour and feeding patterns of certain prehistoric worms. In the model, a worm moves between points on a triangular grid along line segments, representing food. Its turnings are determined by the configuration of eaten and uneaten line segments adjacent to the point at which the worm currently is. Despite being governed by simple rules the behaviour of the worms can be extremely complex, and the ultimate fate of one variant is still unknown."</p>
   
-  <p>See <a href="https://en.wikipedia.org/wiki/Paterson%27s_worms">"Paterson's worms" on Wikipedia</a> for a more detailed description of how the simulation works.</p>
+    <p class="credits">Quotation from Wikipedia used with permission under the <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike License 4.0</a>.</p>
   
+    <p>See <a href="https://en.wikipedia.org/wiki/Paterson%27s_worms">"Paterson's worms" on Wikipedia</a> for a more detailed description of how the simulation works.</p>
+  </div>
+</div>
+
+<div id="sim-output">
   <svg id="worms-sim"></svg>
 </div>
 
