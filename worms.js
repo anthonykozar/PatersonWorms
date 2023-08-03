@@ -342,7 +342,7 @@ function toggleElement(elementid) {
 }
 
 function toggleRulesPanel() {
-  toggleElement("control-panel");
+  toggleElement("rules-panel");
 }
 
 function toggleIntroPanel() {
