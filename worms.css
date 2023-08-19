@@ -1,5 +1,5 @@
 #control-panel {
-  width: 280px;
+  width: 300px;
   float: left;
 }
 
@@ -10,7 +10,7 @@
 svg#worms-sim {
   border: 1px solid black;
   margin: 20px 0px 0px 0px;
-  width: 920px;
+  width: 900px;
   height: 720px;
 }
 
@@ -35,15 +35,28 @@ td label {
   margin-right: 5px;
 }
 
-p.hide-button {
+td.field-info {
+  font-size: 15px;
+  padding: 5px;
+}
+
+.hide-button, .info-button {
   display: inline;
   color: white;
   background-color: #AAA;
-  padding: 2px 7px;
   border-radius: 15px;
   vertical-align: top;
   font-family: "Monaco", monospaced;
+}
+
+.hide-button {
+  padding: 2px 7px;
   font-size: 10pt;
+}
+
+.info-button {
+  padding: 2px 6px;
+  font-size: 8pt;
 }
 
 p.credits {

@@ -24,6 +24,16 @@ var field_array = [1, 0, 0, 0, 0, 0, 0];
 //The following are interesting field arrays:
 // [0, 2, 0, 2, 2, 0, 0]
 
+// Descriptions of each rule field
+const FIELD_DESCRIPTIONS = [
+    "Field 1 selects between a gentle or a sharp turn at new nodes.",
+    "Field 2 selects which path the worm takes the first time it returns to its origin.",
+    "Field 3_1 selects which path the worm takes at certain nodes with 3 uneaten paths.",
+    "Field 3_2 selects which path the worm takes at certain nodes with 3 uneaten paths.",
+    "Field 3_3 selects which path the worm takes at certain nodes with 3 uneaten paths.",
+    "Field 3_4 selects which path the worm takes at certain nodes with 3 uneaten paths.",
+    "Field 4 selects which path the worm takes the second time it returns to its origin." ];
+
 //Gardner's notation is annoyingly difficult to program in a concise fashion due to the seemingly random selection of choices.
 //My notation consists of how many open paths to skip (going ccw from the direction the worm arrived in).
 //To convert from mine to Gardner's, the arrays below handle the various cases.
@@ -432,10 +442,26 @@ function createTable() {
         td.appendChild(x);
       }
       else {
-        td.innerHTML = "field" + field_suffixes[j];
+        td.innerHTML = "field" + field_suffixes[j] + " ";
+        var span = document.createElement("span");
+        span.setAttribute("class", "info-button");
+        span.setAttribute("onclick", "toggleElement(\"field" + field_suffixes[j] + "-descr\")");
+        span.innerHTML = "i"
+        td.appendChild(span);
       }
       tr.appendChild(td);
     }
+
+	// add rows for rule field descriptions
+	tr = document.createElement("TR");
+	tr.setAttribute("id", "field" + field_suffixes[j] + "-descr");
+	tr.style.display = "none";
+	td = document.createElement("TD");
+	td.setAttribute("class", "field-info");
+	td.setAttribute("colspan", 5);
+	td.innerHTML = FIELD_DESCRIPTIONS[j];
+	tr.appendChild(td);
+	table.appendChild(tr);
   }
   
   var submit_button = document.createElement("BUTTON");
