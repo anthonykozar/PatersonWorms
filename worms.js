@@ -58,8 +58,11 @@ var choice4_f = [0, 1];          // Beeler field 1
 // These are the decimal multipliers for each field:
 const FIELD_MULTIPLIERS = [2048, 2, 512, 128, 32, 8, 1];
 
+const MAX_WORMS = 3;
 
+var worms = [];
 var stepcount = 0;
+var isPaused = false;
 var Sven_rule_string;
 var Beeler_rule_string;
 
@@ -77,10 +80,16 @@ var zoom;
 var group;
 var timer;
 var resize_timer;
+var pause_button;
 var stroke_width_slider;
 var step_number_val_label;
 var svens_rule_val_label;
 var beelers_rule_val_label;
+
+var worm_prototype = {
+    cx: 0, cy: 0, cd: 0,	// current x, y, and direction
+    setPosition: function(x, y, direction) { this.cx = x; this.cy = y; this.cd = direction; }
+};
 
 /* addVertex
 ** x - An x value on the lattice
@@ -301,14 +310,17 @@ function setStepCounter(step) {
 ** If updated_pos is false, then the worm has died or a zoom out is needed.
 ** If there are still more steps that need to be taken, then the next step should be queued up.
 */
-function nextStep(step, cx, cy, cd){  
-    var updated_pos = determineMove(cx, cy, cd, step);
+function nextStep(step, worms, doSingleStep = false){
+    var updated_pos = determineMove(worms[0].cx, worms[0].cy, worms[0].cd, step);
     if(updated_pos == false) {
       return false;
     };
     
     setStepCounter(step);
-    timer = setTimeout(function(){nextStep(step+1, updated_pos[0], updated_pos[1], updated_pos[2]);}, speed);
+    worms[0].setPosition(updated_pos[0], updated_pos[1], updated_pos[2]);
+    if (! doSingleStep) {
+      timer = setTimeout(function(){nextStep(step+1, worms);}, speed);
+    }
 }
 
 function getInputFields() {
@@ -337,8 +349,29 @@ function submitNewWorm() {
   initWorm();
 }
 
-function stopWorm() {
-  clearTimeout(timer);
+function setPauseState(paused) {
+  isPaused = paused;
+  if (isPaused) {
+    pause_button.innerHTML = "Resume";
+  }
+  else {
+    pause_button.innerHTML = "Pause";
+  }
+}
+
+function pauseResumeWorm() {
+  if (!isPaused) {
+    clearTimeout(timer);
+    setPauseState(true);
+  }
+  else {
+    setPauseState(false);
+    nextStep(stepcount+1, worms);
+  }
+}
+
+function stepWorm() {
+  if (isPaused) nextStep(stepcount+1, worms, true);
 }
 
 function toggleElement(elementid) {
@@ -466,13 +499,18 @@ function createTable() {
   
   var submit_button = document.createElement("BUTTON");
   submit_button.setAttribute("onclick", "submitNewWorm()");
-  submit_button.innerHTML = "Run"
+  submit_button.innerHTML = "Start"
   body.appendChild(submit_button);
 
-  var stop_button = document.createElement("BUTTON");
-  stop_button.setAttribute("onclick", "stopWorm()");
-  stop_button.innerHTML = "Stop"
-  body.appendChild(stop_button);
+  pause_button = document.createElement("BUTTON");
+  pause_button.setAttribute("onclick", "pauseResumeWorm()");
+  pause_button.innerHTML = "Pause"
+  body.appendChild(pause_button);
+
+  var step_button = document.createElement("BUTTON");
+  step_button.setAttribute("onclick", "stepWorm()");
+  step_button.innerHTML = "Step"
+  body.appendChild(step_button);
 
   body.appendChild(document.createElement("br"));
 
@@ -566,13 +604,18 @@ function initWorm() {
   line_length = 20;
   zoom = 1.0;
   group = snap.g();
-
+  
+  // create worm(s)
+  worms[0] = Object.create(worm_prototype);
+  
   addVertex(0,0);
   moveTo(0, 0, 1, 0, 0, 1);
   stepcount = 1;
+  worms[0].setPosition(1, 0, 0)
+  setPauseState(false);
   // Start "moving" the worm
   timer = setTimeout(function(){
-    nextStep(2, 1, 0, 0);}, speed);
+    nextStep(2, worms);}, speed);
 }
 
 initWorm();
